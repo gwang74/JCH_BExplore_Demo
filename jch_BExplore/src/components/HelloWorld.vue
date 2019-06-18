@@ -84,11 +84,26 @@
 </template>
 
 <script>
+import { getTransactionsByaddress, getLedgerIndex, getLedgerInformationByIndex, getLedgerInformationByHash } from '../js/request'
 export default {
   name: 'HelloWorld',
   data () {
     return {
       msg: 'Welcome to Your Vue.js App'
+    }
+  },
+  mounted() {
+    this.test();
+  },
+  methods:{
+    async test () {
+      // await getAccountBalance('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
+      // await getAccountOrders('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
+      // await getTransactionsByHash('F2A40B1A7ED2097F2F4A5E008F9896336E7DD441F5C1FC74D17491BD58C73FB8')
+      // await getTransactionsByaddress('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
+      await getLedgerIndex()
+      await getLedgerInformationByIndex(13099611)
+      await getLedgerInformationByHash('F2A40B1A7ED2097F2F4A5E008F9896336E7DD441F5C1FC74D17491BD58C73FB8')
     }
   }
 }

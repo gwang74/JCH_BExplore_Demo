@@ -1,4 +1,5 @@
 import api from './api'
+import { formatUnixTime } from './utils'
 
 //创建钱包
 // secret	井通钱包私钥
@@ -43,11 +44,15 @@ export const getAccountBalance = async (address) => {
 export const getAccountOrders = async (address) => {
     try {
         let res = await api.get_account_orders(address);
-        let data;
+        let datas;
         if (res.success) {
-            data = res.orders
+            datas = res.orders
         }
-        return data;
+        for (let data of datas) {
+            data.pair = data.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+            data.pair = data.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+        }
+        return datas;
     } catch (error) {
         return '';
     }
@@ -64,11 +69,12 @@ export const getAccountOrders = async (address) => {
 export const getTransactionsByHash = async (hash) => {
     try {
         let res = await api.get_transactions_by_hash(hash);
-        let data;
+        let datas;
         if (res.success) {
-            data = res.transaction
+            datas = res.transaction
         }
-        return data;
+        datas.date = formatUnixTime(datas.date)
+        return datas;
     } catch (error) {
         return '';
     }
@@ -86,14 +92,21 @@ export const getTransactionsByHash = async (hash) => {
 // offertype	挂单类型，sell或者buy，挂单交易才有
 // pair	交易的货币对，挂单交易才有
 // price	挂单的价格，挂单交易才有
-export const getTransactionsByaddress = async (hash) => {
+export const getTransactionsByaddress = async (address) => {
     try {
-        let res = await api.get_transactions_by_address(hash);
-        let data;
+        let res = await api.get_transactions_by_address(address);
+        let datas;
         if (res.success) {
-            data = res.transactions
+            datas = res.transactions
         }
-        return data;
+        for (let data of datas) {
+            data.date = formatUnixTime(data.date)
+            if (data.pair) {
+                data.pair = data.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+                data.pair = data.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+            }
+        }
+        return datas;
     } catch (error) {
         return '';
     }
@@ -159,7 +172,6 @@ export const getLedgerInformationByIndex = async (index) => {
 export const getLedgerInformationByHash = async (hash) => {
     try {
         let res = await api.get_ledger_information_by_hash(hash);
-        console.log(res)
         return res;
     } catch (error) {
         return '';
