@@ -3,6 +3,8 @@ import Router from 'vue-router'
 import home from '../pages/home'
 import block from '../pages/blockIndex'
 import trade from '../pages/tradeIndex'
+import test from '../components/HelloWorld'
+
 Vue.use(Router)
 
 export default new Router({
@@ -18,6 +20,10 @@ export default new Router({
         path: '/trade',
         name: 'trade',
         component: trade
+    }, {
+        path: '/test',
+        name: 'test',
+        component: test
     }]
 
 })
