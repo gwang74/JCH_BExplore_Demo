@@ -123,7 +123,6 @@ export const getTransactionsByaddress = async (address) => {
                 }
             }
         }
-        console.log(datas)
         return datas;
     } catch (error) {
         return '';
