@@ -1,7 +1,7 @@
 <template>
   <div id="home">
     <section style="background-color: rgb(83, 200, 212);min-height:260px;">
-       <div class="topImgBox"><img src=""></div>
+       <div class="topImgBox"><img src="../images/bk.jpg" object-fit="cover"></div>
      </section>
      <section class="init">
        <div class="top">
@@ -220,7 +220,7 @@ export default {
       }
     },
     searchAll(to) {
-      this.$store.dispatch("updateCurrentNav", to);
+      //this.$store.dispatch("updateCurrentNav", to);
       this.$router.push(`/${to}`);
     },
     rowStyle({ row, rowIndex }) {
