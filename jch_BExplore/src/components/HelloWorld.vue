@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { getTransactionsByHash, getLedgerIndex, getLedgerInformationByIndex, getLedgerInformationByHash, getHomeData } from '../js/request'
+import { getTransactionsByHash, getTransactionsByaddress, getLedgerIndex, getLedgerInformationByIndex, getLedgerInformationByHash, getHomeData } from '../js/request'
 export default {
   name: 'HelloWorld',
   data () {
@@ -99,8 +99,8 @@ export default {
     async test () {
       // await getAccountBalance('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
       // await getAccountOrders('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
-      await getTransactionsByHash('2DAAE21F605C157F8FB251F81A69DE71C7FF8C29553277507B62430BE81F5C88')
-      // await getTransactionsByaddress('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
+      await getTransactionsByHash('18BA0230AE522F0F57AFED22318829E3015F012DCB28D7C376740778F0AE0823')
+      await getTransactionsByaddress('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
       // await getLedgerIndex()
       // await getLedgerInformationByIndex(13099611)
       // await getLedgerInformationByHash('2DAAE21F605C157F8FB251F81A69DE71C7FF8C29553277507B62430BE81F5C88')

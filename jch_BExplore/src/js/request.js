@@ -66,6 +66,7 @@ export const getAccountOrders = async (address) => {
 // result	交易结果
 // counterparty	交易对家
 // amount	交易金额
+// effects	详见effects解释
 export const getTransactionsByHash = async (hash) => {
     try {
         let res = await api.get_transactions_by_hash(hash);
@@ -74,6 +75,15 @@ export const getTransactionsByHash = async (hash) => {
             datas = res.transaction
         }
         datas.date = formatUnixTime(datas.date)
+        datas.pair = datas.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+        datas.pair = datas.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+
+        if(datas.effects && datas.effects.length > 0) {
+            for (let effect of datas.effects) {
+                effect.pair = effect.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+                effect.pair = effect.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+            }
+        }
         return datas;
     } catch (error) {
         return '';
@@ -92,6 +102,7 @@ export const getTransactionsByHash = async (hash) => {
 // offertype	挂单类型，sell或者buy，挂单交易才有
 // pair	交易的货币对，挂单交易才有
 // price	挂单的价格，挂单交易才有
+// effects	详见effects解释
 export const getTransactionsByaddress = async (address) => {
     try {
         let res = await api.get_transactions_by_address(address);
@@ -105,7 +116,14 @@ export const getTransactionsByaddress = async (address) => {
                 data.pair = data.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
                 data.pair = data.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
             }
+            if (data.effects && data.effects.length > 0) {
+                for (let effect of data.effects) {
+                    effect.pair = effect.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+                    effect.pair = effect.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+                }
+            }
         }
+        console.log(datas)
         return datas;
     } catch (error) {
         return '';
