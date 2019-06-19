@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { getTransactionsByaddress, getLedgerIndex, getLedgerInformationByIndex, getLedgerInformationByHash } from '../js/request'
+import { getTransactionsByHash, getTransactionsByaddress, getLedgerIndex, getLedgerInformationByIndex, getLedgerInformationByHash, getHomeData } from '../js/request'
 export default {
   name: 'HelloWorld',
   data () {
@@ -99,11 +99,12 @@ export default {
     async test () {
       // await getAccountBalance('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
       // await getAccountOrders('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
-      // await getTransactionsByHash('F2A40B1A7ED2097F2F4A5E008F9896336E7DD441F5C1FC74D17491BD58C73FB8')
-      // await getTransactionsByaddress('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
-      await getLedgerIndex()
-      await getLedgerInformationByIndex(13099611)
-      await getLedgerInformationByHash('F2A40B1A7ED2097F2F4A5E008F9896336E7DD441F5C1FC74D17491BD58C73FB8')
+      await getTransactionsByHash('18BA0230AE522F0F57AFED22318829E3015F012DCB28D7C376740778F0AE0823')
+      await getTransactionsByaddress('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
+      // await getLedgerIndex()
+      // await getLedgerInformationByIndex(13099611)
+      // await getLedgerInformationByHash('2DAAE21F605C157F8FB251F81A69DE71C7FF8C29553277507B62430BE81F5C88')
+      // await getHomeData();
     }
   }
 }
