@@ -3,12 +3,8 @@ import Router from 'vue-router'
 import home from '../pages/home'
 import block from '../pages/blockIndex'
 import trade from '../pages/tradeIndex'
-<<<<<<< HEAD
 import blockDetail from '../pages/blockDetail'
 import tradeDetail from '../pages/tradeDetail'
-=======
-import test from '../components/HelloWorld'
->>>>>>> zcZhang
 
 Vue.use(Router)
 
@@ -26,18 +22,12 @@ export default new Router({
         name: 'trade',
         component: trade
     }, {
-<<<<<<< HEAD
-        path: '/blockDetail',
+        path: '/blockdetail',
         name: 'blockDetail',
         component: blockDetail
     }, {
-        path: '/tradeDetail',
+        path: '/tradedetail',
         name: 'tradeDetail',
         component: tradeDetail
-=======
-        path: '/test',
-        name: 'test',
-        component: test
->>>>>>> zcZhang
     }]
 })

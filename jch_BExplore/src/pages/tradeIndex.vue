@@ -352,12 +352,11 @@ export default {
       height: 40px;
     }
     span {
-      height: 40px;
+      height: 28px;
     min-width: 100px;
     padding: 0 3px;
     background: linear-gradient(90deg, #4a99a5, #4ca0ca);
-    margin-left: 13px;
-    border-radius: 13px;
+    border-radius: 0px 13px 13px 0px;
     color: #f2f8fc;
     display: -ms-flexbox;
     display: flex;

@@ -48,13 +48,13 @@
           <li v-for="(item,index) of  listnum" :key="index">
             <div style="padding:20px;">
                   <div style="color:##303052;font-size:14px;font-weight:600;white-space:nowrap;margin-bottom:8px;">
-                    <span style="margin-right:10px;">高度</span>{{item._id}}
+                    <span style="margin-right:10px;">高度</span>{{item.ledger_index}}
                   </div>
                   <div class="display:flex;align-items: center;font-size:14px;margin:10px 0">
                     <span style="color:#93A3B7;margin-right:10px;font-size:14px;">交易数
                       </span><span style="font-size:14px;" :class="'className'+index" >{{item.transNum}}</span>
                   </div>
-                  <div class="hash" @click="jumpDetail('blockDetail',item.hash)" >{{item.hash}}</div>
+                  <div class="hash" @click="jumpDetail('blockDetail',item.hash)" >{{item.ledger_hash}}</div>
                   <div class="time" >{{handleHashtime(item.time)}}</div>
             </div>
           </li>
@@ -147,13 +147,14 @@
 
 <script>
 import {
-        getLedgerIndex
+        getLedgerIndex,
+        getHomeData
 } from '../js/request'
 export default {
   name: "home",
   created() {
     this.getlastBlocklists();
-    //this.getLatestDeals();
+    this.getLatestDeals();
   },
   data() {
     return {
@@ -177,8 +178,8 @@ export default {
       this.loadingBlock = true;
       let res = await getLedgerIndex();
       console.log(res);
-      if (res.result === true && (res.code === 0 || res.code === "0")) {
-        this.listnum = res.data.list;
+      if (res.success === true && (res.status_code === 0 || res.status_code === "0")) {
+        this.listnum.push(res);
       } else {
         this.listnum = [];
       }
@@ -190,12 +191,8 @@ export default {
         return;
       }
       this.loadingTrade = true;
-      let res = await getLatestDeal();
-      // let res2 = await getTokensDetail({
-      //   tokens: "JSLASH_jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or",
-      //   page: "2"
-      // });
-      // let res3 = await getTokens();
+      let res = await getHomeData();
+      console.log(res);
       if (res.result === true && (res.code === 0 || res.code === "0")) {
         this.latestdeal = this.handleGetData(res.data.list);
       } else {
@@ -512,12 +509,11 @@ export default {
   border: 1px solid #c1e9f1;
 }
 .block {
-    height: 40px;
+    height: 28px;
     min-width: 100px;
     padding: 0 3px;
     background: linear-gradient(90deg, #4a99a5, #4ca0ca);
-    margin-left: 13px;
-    border-radius: 13px;
+    border-radius: 0px 13px 13px 0px;
     color: #f2f8fc;
     display: -ms-flexbox;
     display: flex;
