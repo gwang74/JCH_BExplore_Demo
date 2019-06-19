@@ -3,6 +3,8 @@ import Router from 'vue-router'
 import home from '../pages/home'
 import block from '../pages/blockIndex'
 import trade from '../pages/tradeIndex'
+import blockDetail from '../pages/blockDetail'
+import tradeDetail from '../pages/tradeDetail'
 
 Vue.use(Router)
 
@@ -19,5 +21,13 @@ export default new Router({
         path: '/trade',
         name: 'trade',
         component: trade
+    }, {
+        path: '/blockDetail',
+        name: 'blockDetail',
+        component: blockDetail
+    }, {
+        path: '/tradeDetail',
+        name: 'tradeDetail',
+        component: tradeDetail
     }]
 })
