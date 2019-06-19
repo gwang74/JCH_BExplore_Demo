@@ -1,8 +1,10 @@
 <template>
+<div>
+<headerHav></headerHav>
   <div id="trade" class="blo">
     <div class="selectionDate">
       <div class="blocktitle">
-        <img src='../images/trade.png' />
+        <img src='../images/trade.png' style="height:39px;width:39px;"/>
         <span>最新交易</span>
       </div>
     </div>
@@ -73,6 +75,7 @@
       </ul>
     </div>
   </div>
+</div>
 </template>
 <script>
 //import { getTranslist } from "../../js/fetch";
@@ -284,6 +287,8 @@ export default {
   text-align: center;
   padding: 0 70px;
   min-width: 900px;
+  height: 100%;
+  min-height: 600px;
   .bockListData {
     border: 1px solid #c1e9f1;
   }
@@ -341,10 +346,10 @@ export default {
   .blocktitle {
     display: flex;
     align-items: center;
+    margin:20px 20px 20px 0px;
     img {
       width: 40px;
       height: 40px;
-      margin: 30px 9px 20px 0px;
     }
     span {
       height: 40px;

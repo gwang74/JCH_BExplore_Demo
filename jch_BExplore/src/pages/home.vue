@@ -1,7 +1,7 @@
 <template>
   <div id="home">
-    <section style="background-color: rgb(83, 200, 212);min-height:260px;">
-       <div class="topImgBox"><img src="../images/bk.jpg" object-fit="cover"></div>
+    <section style="background-color: rgb(47, 117, 153);min-height:260px;">
+       <div class="topImgBox"><img src="../images/bk.jpg"></div>
      </section>
      <section class="init">
        <div class="top">
@@ -39,7 +39,7 @@
           <span class="block">区块高度</span>
         </div>
         <div class="buttom" @click="searchAll('block')">
-          <div class="buttomContent"><i class="iconfont icon-chakangengduoicon"></i>
+          <div class="buttomContent"><i class="iconfont el-icon-arrow-right"></i>
           查看更多</div>
         </div>
       </div>
@@ -75,7 +75,7 @@
             <span class="block">最新数据</span>
           </div>
           <div class="buttom" @click="searchAll('trade')" >
-             <div class="buttomContent"><i class="iconfont icon-chakangengduoicon"></i>
+             <div class="buttomContent"><i class="iconfont el-icon-arrow-right"></i>
             查看更多</div>
           </div>
         </div>
@@ -146,10 +146,13 @@
 </template>
 
 <script>
+import {
+        getLedgerIndex
+} from '../js/request'
 export default {
   name: "home",
   created() {
-    //this.getlastBlocklists();
+    this.getlastBlocklists();
     //this.getLatestDeals();
   },
   data() {
@@ -158,7 +161,7 @@ export default {
       tokenList: [],
       showSwitch: false,
       searchContent: "",
-      searchPlacehoder:"请输入币种/地址/哈希",
+      searchPlacehoder:"请输入地址/哈希",
       input: "",
       latestdeal: [],
       loadingBlock: false,
@@ -172,7 +175,8 @@ export default {
         return;
       }
       this.loadingBlock = true;
-      let res = await getlastBlocklist();
+      let res = await getLedgerIndex();
+      console.log(res);
       if (res.result === true && (res.code === 0 || res.code === "0")) {
         this.listnum = res.data.list;
       } else {
@@ -207,7 +211,7 @@ export default {
       }
     },
     jumpWellcomePage() {
-      window.open("https://jccdex.cn/#page1");
+      //window.open("https://jccdex.cn/#page1");
     },
     async searchTokens() {
       if (this.searchContent) {
@@ -317,6 +321,8 @@ export default {
     }
   }
   .topImgBox > img {
+    opacity: 0.2;
+    object-fit: cover;
     width: 100%;
     background: linear-gradient(
       180deg,
@@ -478,7 +484,7 @@ export default {
     height: 42px;
     line-height: 40px;
     text-align: center;
-    background-color: #4789a9;
+    background-color: #6cc0e8;
     color: #fff;
     user-select: none;
     border-radius: 0 4px 4px 0;
@@ -572,7 +578,7 @@ export default {
 .endEnd {
   position: relative;
   display: flex;
-  background: rgb(83, 200, 212);
+  background: rgb(47, 117, 153);
   align-items: center;
   height: 50px;
   padding: 0 60px;

@@ -1,4 +1,6 @@
 <template>
+<div> 
+    <headerHav></headerHav>
   <div id="block">
     <div class="selectionDate">
       <div class="blocktitle">
@@ -53,6 +55,7 @@
       </ul>
     </div>
   </div>
+</div>
 </template>
 <script>
 //import { getBlocklist } from "../../js/fetch";
@@ -180,6 +183,8 @@ export default {
   text-align: center;
   padding: 0 70px;
   min-width: 900px;
+  height: 100%;
+  min-height: 600px;
   .bockListData {
     border: 1px solid #c1e9f1;
   }
@@ -195,10 +200,10 @@ export default {
   .blocktitle {
     display: flex;
     align-items: center;
+    margin:20px 20px 20px 0px;
     img {
       width: 40px;
       height: 40px;
-      margin: 30px 9px 20px 0px;
     }
     span {
       height: 40px;
