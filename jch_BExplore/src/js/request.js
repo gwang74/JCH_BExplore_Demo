@@ -31,7 +31,7 @@ export const getAccountBalance = async (address) => {
         }
         return data;
     } catch (error) {
-        return '';
+        return error;
     }
 }
 
@@ -54,7 +54,7 @@ export const getAccountOrders = async (address) => {
         }
         return datas;
     } catch (error) {
-        return '';
+        return error;
     }
 }
 
@@ -75,10 +75,11 @@ export const getTransactionsByHash = async (hash) => {
             datas = res.transaction
         }
         datas.date = formatUnixTime(datas.date)
-        datas.pair = datas.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
-        datas.pair = datas.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
-
-        if(datas.effects && datas.effects.length > 0) {
+        if (datas.pair) {
+            datas.pair = datas.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+            datas.pair = datas.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+        }
+        if (datas.effects && datas.effects.length > 0) {
             for (let effect of datas.effects) {
                 effect.pair = effect.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
                 effect.pair = effect.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
@@ -86,7 +87,7 @@ export const getTransactionsByHash = async (hash) => {
         }
         return datas;
     } catch (error) {
-        return '';
+        return error;
     }
 }
 
@@ -125,7 +126,7 @@ export const getTransactionsByaddress = async (address) => {
         }
         return datas;
     } catch (error) {
-        return '';
+        return error;
     }
 }
 
@@ -139,7 +140,7 @@ export const getLedgerIndex = async () => {
         let res = await api.get_ledger_index();
         return res;
     } catch (error) {
-        return '';
+        return error;
     }
 }
 
@@ -163,9 +164,12 @@ export const getLedgerIndex = async () => {
 export const getLedgerInformationByIndex = async (index) => {
     try {
         let res = await api.get_ledger_information_by_index(index);
+        if (res.transactions) {
+            res.transactionLength = res.transactions.length;
+        }
         return res;
     } catch (error) {
-        return '';
+        return error;
     }
 }
 
@@ -191,8 +195,23 @@ export const getLedgerInformationByHash = async (hash) => {
         let res = await api.get_ledger_information_by_hash(hash);
         return res;
     } catch (error) {
-        return '';
+        return error;
     }
+}
+
+//获取最新区块高度
+// hash 哈希
+// ledger_index 高度
+// transactionLength 交易数
+// close_time_human 时间
+export const getLedgerNew = async () => {
+    let ledger = await getLedgerIndex();
+    let ledgerNewData = [];
+    for (let i = 0; i < 6; i++) {
+        let data = await getLedgerInformationByIndex(ledger.ledger_index * 1 - i)
+        ledgerNewData.push(data)
+    }
+    return ledgerNewData;
 }
 
 //获取最新数据
