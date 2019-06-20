@@ -4,7 +4,7 @@ import { formatUnixTime } from './utils'
 //创建钱包
 // secret	井通钱包私钥
 // address	井通钱包地址
-export const createWallet = async () => {
+export const createWallet = async() => {
     try {
         let res = await api.create_wallet();
         let data;
@@ -22,7 +22,7 @@ export const createWallet = async () => {
 // currency 币种名称
 // issuer   发行方
 // freezed  冻结
-export const getAccountBalance = async (address) => {
+export const getAccountBalance = async(address) => {
     try {
         let res = await api.get_account_balance(address);
         let data;
@@ -41,7 +41,7 @@ export const getAccountBalance = async (address) => {
 // amount	挂单的数量
 // price	挂单的价格
 // sequence	交易序列号
-export const getAccountOrders = async (address) => {
+export const getAccountOrders = async(address) => {
     try {
         let res = await api.get_account_orders(address);
         let datas;
@@ -67,7 +67,7 @@ export const getAccountOrders = async (address) => {
 // counterparty	交易对家
 // amount	交易金额
 // effects	详见effects解释
-export const getTransactionsByHash = async (hash) => {
+export const getTransactionsByHash = async(hash) => {
     try {
         let res = await api.get_transactions_by_hash(hash);
         let datas;
@@ -75,10 +75,11 @@ export const getTransactionsByHash = async (hash) => {
             datas = res.transaction
         }
         datas.date = formatUnixTime(datas.date)
-        datas.pair = datas.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
-        datas.pair = datas.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
-
-        if(datas.effects && datas.effects.length > 0) {
+        if (datas.pair) {
+            datas.pair = datas.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+            datas.pair = datas.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
+        }
+        if (datas.effects.length > 0) {
             for (let effect of datas.effects) {
                 effect.pair = effect.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
                 effect.pair = effect.pair.replace(":jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or", "")
@@ -103,7 +104,7 @@ export const getTransactionsByHash = async (hash) => {
 // pair	交易的货币对，挂单交易才有
 // price	挂单的价格，挂单交易才有
 // effects	详见effects解释
-export const getTransactionsByaddress = async (address) => {
+export const getTransactionsByaddress = async(address) => {
     try {
         let res = await api.get_transactions_by_address(address);
         let datas;
@@ -134,7 +135,7 @@ export const getTransactionsByaddress = async (address) => {
 // success	请求结果
 // ledger_hash	账本hash
 // ledger_index	账本号/区块高度
-export const getLedgerIndex = async () => {
+export const getLedgerIndex = async() => {
     try {
         let res = await api.get_ledger_index();
         return res;
@@ -160,7 +161,7 @@ export const getLedgerIndex = async () => {
 // total_coins	swt总量
 // transaction_hash	交易hash树根
 // transactions	该账本里的交易列表
-export const getLedgerInformationByIndex = async (index) => {
+export const getLedgerInformationByIndex = async(index) => {
     try {
         let res = await api.get_ledger_information_by_index(index);
         return res;
@@ -186,7 +187,7 @@ export const getLedgerInformationByIndex = async (index) => {
 // total_coins	swt总量
 // transaction_hash	交易hash树根
 // transactions	该账本里的交易列表
-export const getLedgerInformationByHash = async (hash) => {
+export const getLedgerInformationByHash = async(hash) => {
     try {
         let res = await api.get_ledger_information_by_hash(hash);
         return res;
@@ -207,15 +208,14 @@ export const getLedgerInformationByHash = async (hash) => {
 // memos 备注
 // result 交易结果
 // type 交易类型（见下备注）
-export const getHomeData = async () => {
+export const getHomeData = async() => {
     let ledger = await getLedgerIndex();
     let ledgerData = await getLedgerInformationByIndex(ledger.ledger_index)
     let hashDatas = ledgerData.transactions
     let homeDatas = [];
     if (hashDatas && hashDatas.length > 0) {
         for (let hash of hashDatas) {
-            let homeData = await getTransactionsByHash(hash)
-            homeDatas.push(homeData)
+            homeDatas.push(await getTransactionsByHash(hash))
         }
     }
     return homeDatas
@@ -271,4 +271,3 @@ export const getHomeData = async () => {
 
 // 6.offereffect，挂单成交情况，即被动成交的情况，在交易信息中包含的信息有：
 // effects	详见effects解释
-

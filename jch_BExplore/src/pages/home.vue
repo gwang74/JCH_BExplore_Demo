@@ -55,7 +55,7 @@
                       </span><span style="font-size:14px;" :class="'className'+index" >{{item.transNum}}</span>
                   </div>
                   <div class="hash" @click="jumpDetail('blockDetail',item.hash)" >{{item.ledger_hash}}</div>
-                  <div class="time" >{{handleHashtime(item.time)}}</div>
+                  <div class="time" >{{item.time}}</div>
             </div>
           </li>
          </div>
@@ -193,8 +193,8 @@ export default {
       this.loadingTrade = true;
       let res = await getHomeData();
       console.log(res);
-      if (res.result === true && (res.code === 0 || res.code === "0")) {
-        this.latestdeal = this.handleGetData(res.data.list);
+      if (res.length > 0) {
+        this.latestdeal = this.handleGetData(res);
       } else {
         this.latestdeal = [];
       }
@@ -252,6 +252,18 @@ export default {
         this.showDialog = false;
       }, 500);
     },
+    jumpDetail(name, hash) {
+      let path = "";
+      if (name === "tradeDetail") {
+        path = "trade";
+      } else if (name === "blockDetail") {
+        path = "block";
+      } else {
+        return;
+      }
+      let url = window.location.origin + `/#/${name}/?hash=${hash}`;
+      window.open(url, "_blank");
+    },
     enterSearch() {
       this.confirmSearch();
     },
@@ -292,7 +304,33 @@ export default {
           showClose: true
         });
       }
-    }
+    },
+    async jumpDetailByHash(value) {
+      let res = await getBlockDetail(value);
+      if (res.result === true && (res.code === 0 || res.code === "0")) {
+        let hashType =
+          this.getHashType(this.displayDefaultHashType(res.data).hashType) ||
+          this.getHashType(res.data.info.hashType);
+        let path = "";
+        if (hashType === "tradeDetail") {
+          path = "trade";
+        } else if (hashType === "blockDetail") {
+          path = "block";
+        } else {
+          return;
+        }
+        let url =
+          window.location.origin + `/#/${path}/${hashType}/?hash=${value}`;
+        window.open(url, "_blank");
+      } else {
+        this.$message({
+          type: "error",
+          message: this.$t("message.hashValueInputError"),
+          duration: 1600,
+          showClose: true
+        });
+      }
+    },
   }
 };
 </script>
@@ -505,8 +543,22 @@ export default {
   width: auto;
   min-height: 60px;
 }
-.contentList {
-  border: 1px solid #c1e9f1;
+#list {
+  margin: 0 60px;
+  text-align: left;
+  background-color: #fff;
+  .contentList {
+    display: flex;
+    border: 1px solid #c1e9f1;
+  }
+  li {
+    width: 16.6%;
+    list-style-type: none;
+    border-right: 1px solid #e3eef0;
+  }
+  li:nth-last-child(1) {
+    border: 0;
+  }
 }
 .block {
     height: 28px;
