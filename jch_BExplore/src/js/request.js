@@ -1,5 +1,5 @@
 import api from './api'
-import { formatUnixTime } from './utils'
+import { formatUnixTime, formatUSATime } from './utils'
 
 //创建钱包
 // secret	井通钱包私钥
@@ -148,7 +148,6 @@ export const getLedgerIndex = async () => {
 // success	请求结果
 // accepted	区块是否已经产生
 // account_hash	状态hash树根
-// close_time	关闭时间
 // close_time_human	关闭时间
 // close_time_resolution	关闭周期
 // closed	账本是否已经关闭
@@ -161,11 +160,15 @@ export const getLedgerIndex = async () => {
 // total_coins	swt总量
 // transaction_hash	交易hash树根
 // transactions	该账本里的交易列表
+// transactionLength 交易数
 export const getLedgerInformationByIndex = async (index) => {
     try {
         let res = await api.get_ledger_information_by_index(index);
         if (res.transactions) {
             res.transactionLength = res.transactions.length;
+        }
+        if (res.close_time_human) {
+            res.close_time_human = formatUSATime(res.close_time_human);
         }
         return res;
     } catch (error) {
@@ -177,7 +180,6 @@ export const getLedgerInformationByIndex = async (index) => {
 // success	请求结果
 // accepted	区块是否已经产生
 // account_hash	状态hash树根
-// close_time	关闭时间
 // close_time_human	关闭时间
 // close_time_resolution	关闭周期
 // closed	账本是否已经关闭
@@ -190,9 +192,16 @@ export const getLedgerInformationByIndex = async (index) => {
 // total_coins	swt总量
 // transaction_hash	交易hash树根
 // transactions	该账本里的交易列表
+// transactionLength 交易数
 export const getLedgerInformationByHash = async (hash) => {
     try {
         let res = await api.get_ledger_information_by_hash(hash);
+        if (res.transactions) {
+            res.transactionLength = res.transactions.length;
+        }
+        if (res.close_time_human) {
+            res.close_time_human = formatUSATime(res.close_time_human);
+        }
         return res;
     } catch (error) {
         return error;
