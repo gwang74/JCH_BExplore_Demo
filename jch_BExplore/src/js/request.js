@@ -73,6 +73,9 @@ export const getTransactionsByHash = async(hash) => {
         let datas;
         if (res.success) {
             datas = res.transaction
+            datas.success = true;
+        } else {
+            datas.success = false;
         }
         datas.date = formatUnixTime(datas.date)
         if (datas.pair) {

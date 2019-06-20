@@ -13,17 +13,20 @@
           <div class="index"><img src=""></div>
             <p class="browser">井创SWTC公链浏览器</p>
             <div class="searchWarp">
-              <input type="text" v-model="searchContent" :placeholder="searchPlacehoder" v-on:input ="searchTokens"  @blur="closeDialog" @focus="openDialog" @keyup.enter="enterSearch" @keyup.down="downSearch" @keyup.up="upSearch">
+              <input type="text" v-model="searchContent" :placeholder="searchPlacehoder">
               <span class="serachButton"  @click="confirmSearch">
                 <i class="iconfont icon-sousuoicon el-icon-search"></i>
               </span>
-              <div class="dialog" id="dialog" v-show='searchContent !== "" && tokenList.length!== 0&&showDialog' ref="dialogRef">
-                    <div v-for=" (item,index) in tokenList" :key="index" class="dialogItem"  @click="jumpTokenDetail(item)" :class="{'dialogItemBg': index===tokenListIndexes}">
-                        <div>{{interceptString(tokensSplit(item,1))}}</div><div><span style="margin-right:10px;">钱包:</span>{{interceptString(tokensSplit(item,2),2)}}</div>
-                    </div>
-                </div>
             </div>
          </div>
+         <div id="wallet" @click="createWallet">
+              <span><i class="iconfont el-icon-wallet"></i>创建钱包
+              </span>
+           </div>
+           <div id="transfer" @click="transferAction">
+              <span><i class="iconfont el-icon-coin"></i>转账
+              </span>
+           </div>
         </div>
      </section>
      <section>
@@ -52,10 +55,10 @@
                   </div>
                   <div class="display:flex;align-items: center;font-size:14px;margin:10px 0">
                     <span style="color:#93A3B7;margin-right:10px;font-size:14px;">交易数
-                      </span><span style="font-size:14px;" :class="'className'+index" >{{item.transNum}}</span>
+                      </span><span style="font-size:14px;" :class="'className'+index" >{{item.transactionLength}}</span>
                   </div>
                   <div class="hash" @click="jumpDetail('blockDetail',item.hash)" >{{item.ledger_hash}}</div>
-                  <div class="time" >{{item.time}}</div>
+                  <div class="time" >{{item.close_time_human}}</div>
             </div>
           </li>
          </div>
@@ -92,23 +95,16 @@
           <el-table-column  width="30px"></el-table-column>
            <el-table-column  prop="sort" label="序号" min-width="8%" align="left" header-align="left"></el-table-column>
            <el-table-column prop="type" label="交易类型" id="ellipsis" width="130px" align="left" header-align="left">
-             <template slot-scope="scope">
-              <div style="display: flex;align-items: center;"> <i :class="scope.row.displayDifferentBg" style="margin-right:6px;"></i>--</div>
-              <!-- <span :class="scope.row.displayDifferentBg" style="margin-right:6px;"></span> -->
-            </template>
           </el-table-column>
            <el-table-column prop="flag" label="交易方式" id="ellipsis" min-width="10%" align="center">
-               <template slot-scope="scope">
-                  <span :style="{ color:scope.row.displayDifferentColor }">--</span>
-              </template>
           </el-table-column>
           <el-table-column prop="_id"  label="交易哈希"  id="ellipsis" align="center" header-align="center" min-width="47%">
             <template slot-scope="scope">
-              <span class="hashSpan" @click="jumpDetail('tradeDetail',scope.row._id)">{{handleData(scope.row._id)}}</span>
+              <span class="hashSpan" @click="jumpDetail('tradeDetail',scope.row._id)">{{scope.row._id}}</span>
             </template>
           </el-table-column>
           <el-table-column prop="transactionAmount"  label="交易内容"  id="ellipsis"  align="right" header-align="right"  min-width="22%" >
-            <template slot-scope="scope">
+            <!-- <template slot-scope="scope">
                 <span v-if="scope.row.takerPaysValue" style="color:#3B3F4C;">
                     <span style="white-space: nowrap;">{{scope.row.takerGetsValue}}</span>
                     <span style="white-space: nowrap;">{{cnyTransformCNT(scope.row.takerGetsCurrency)}}</span>
@@ -121,7 +117,7 @@
                       <span style="white-space: nowrap;">{{cnyTransformCNT(scope.row.takerCurreny)}}</span>
                 </span>
                 <span v-else style="color:#3B3F4C;">---</span>
-            </template>
+            </template> -->
           </el-table-column>
           <el-table-column width="30px"></el-table-column>
         </el-table>
@@ -147,9 +143,16 @@
 
 <script>
 import {
-        getLedgerIndex,
-        getHomeData
-} from '../js/request'
+        getLedgerNew,
+        getHomeData,
+        getTransactionsByHash,
+        getLedgerInformationByHash
+} from '../js/request';
+import {
+       getTransactionAmount,
+       getType
+} from '../js/utils';
+import { jtWallet } from "jcc_wallet";
 export default {
   name: "home",
   created() {
@@ -159,7 +162,6 @@ export default {
   data() {
     return {
       listnum: [],
-      tokenList: [],
       showSwitch: false,
       searchContent: "",
       searchPlacehoder:"请输入地址/哈希",
@@ -171,28 +173,25 @@ export default {
   },
   methods: {
        async getlastBlocklists() {
-      // this.listnum = [];
       if (this.loadingBlock) {
         return;
       }
       this.loadingBlock = true;
-      let res = await getLedgerIndex();
-      console.log(res);
-      if (res.success === true && (res.status_code === 0 || res.status_code === "0")) {
-        this.listnum.push(res);
+      let res = await getLedgerNew();
+      if (res.length > 0) {
+        this.listnum = res;
       } else {
         this.listnum = [];
       }
       this.loadingBlock = false;
     },
     async getLatestDeals() {
-      // this.latestdeal = [];
       if (this.loadingTrade) {
         return;
       }
       this.loadingTrade = true;
       let res = await getHomeData();
-      console.log(res);
+    
       if (res.length > 0) {
         this.latestdeal = this.handleGetData(res);
       } else {
@@ -200,25 +199,44 @@ export default {
       }
       this.loadingTrade = false;
     },
-    jumpTokenDetail(token) {
-      this.searchContent = "";
-      if (token) {
-        let url = window.location.origin + `/#/tokendetail/?token=${token}`;
-        window.open(url, "_blank");
+     handleGetData(res) {
+      let i = 0;
+      let list = [];
+      for (; i < res.length; i++) {
+        list.push({
+          sort: i + 1,
+          _id: res[i].hash,
+          type: getType(res[i].type),
+          flag: res[i].flag || "---",
+          transactionAmount: getTransactionAmount(res[i].type, res[i].effects, res[i].amount),
+          time: res[i].date
+        });
+      }
+      return list;
+    },
+    displayDefaultValues(value) {
+      if (value) {
+        return value;
+      } else {
+        return { value: undefined };
+      }
+    },
+    displayDefaultCurrency(value) {
+      if (value) {
+        return value;
+      } else {
+        return { currency: undefined };
+      }
+    },
+    cnyTransformCNT(value) {
+      if (value === "CNY") {
+        return "CNT";
+      } else {
+        return value;
       }
     },
     jumpWellcomePage() {
       //window.open("https://jccdex.cn/#page1");
-    },
-    async searchTokens() {
-      if (this.searchContent) {
-        let res = await fuzzyqueryBytokens(this.searchContent);
-        if (res.result === true && (res.code === 0 || res.code === "0")) {
-          this.tokenList = res.data;
-        } else {
-          this.tokenList = [];
-        }
-      }
     },
     searchAll(to) {
       //this.$store.dispatch("updateCurrentNav", to);
@@ -241,17 +259,6 @@ export default {
       }
       // console.log(this.showSwitch);
     },
-    openDialog() {
-      this.tokenList = [];
-      this.searchContent = "";
-      this.showDialog = true;
-    },
-    closeDialog() {
-      setTimeout(() => {
-        this.tokenListIndexes = 0;
-        this.showDialog = false;
-      }, 500);
-    },
     jumpDetail(name, hash) {
       let path = "";
       if (name === "tradeDetail") {
@@ -266,6 +273,12 @@ export default {
     },
     enterSearch() {
       this.confirmSearch();
+    },
+    createWallet() {
+        this.$router.push(`/home`);
+    },
+    transferAction() {
+        this.$router.push(`/home`);
     },
     async confirmSearch(value) {
       this.searchContent = this.searchContent.replace(/(^\s*)|(\s*$)/g, "");
@@ -294,8 +307,6 @@ export default {
         }
       } else if (/^[0-9A-Za-z]{64}$/.test(this.searchContent)) {
         this.jumpDetailByHash(this.searchContent);
-      } else if (this.tokenList.length > 0) {
-        this.jumpTokenDetail(this.tokenList[this.tokenListIndexes]);
       } else {
         this.$message({
           type: "error",
@@ -305,27 +316,26 @@ export default {
         });
       }
     },
+    async getHashType(hash) {
+      let block = await getLedgerInformationByHash(hash);
+      let trade = await getTransactionsByHash(hash);
+      let res = "";
+      console.log(block,trade)
+      if(block.success&&!trade.success) {res = "blockDetail"}
+      else if(!block.success&&trade.success) {res = "tradeDetail"}
+      return res;
+    },
     async jumpDetailByHash(value) {
-      let res = await getBlockDetail(value);
-      if (res.result === true && (res.code === 0 || res.code === "0")) {
-        let hashType =
-          this.getHashType(this.displayDefaultHashType(res.data).hashType) ||
-          this.getHashType(res.data.info.hashType);
-        let path = "";
-        if (hashType === "tradeDetail") {
-          path = "trade";
-        } else if (hashType === "blockDetail") {
-          path = "block";
-        } else {
-          return;
-        }
+      let res = await this.getHashType(value);
+      console.log(res)
+      if (res !== "") {
         let url =
-          window.location.origin + `/#/${path}/${hashType}/?hash=${value}`;
+          window.location.origin + `/#/${res}/?hash=${value}`;
         window.open(url, "_blank");
       } else {
         this.$message({
           type: "error",
-          message: this.$t("message.hashValueInputError"),
+          message: "哈希值输入错误",
           duration: 1600,
           showClose: true
         });
@@ -411,21 +421,6 @@ export default {
       color: #ffffff;
       font-size: 14px;
       font-weight: 400;
-      .token {
-        display: flex;
-        align-items: center;
-        height: 30px;
-        padding-right: 9px;
-        background: rgba(56, 95, 246, 1);
-        border-radius: 4px;
-        color: #fff;
-        i {
-          margin: 0 7px 0 9px;
-        }
-      }
-      .token:hover {
-        color: #0ad8f0;
-      }
       span {
         margin-left: 28px;
       }
@@ -485,6 +480,34 @@ export default {
   font-size: 14px;
   position: relative;
 }
+#wallet {
+    position: absolute;
+    bottom: 10px;
+    left: 70px;
+    height: 40px;
+    width: 120px;
+    background: #6cc0e8;
+    border: 1px solid #e3e3e3;
+    border-radius: 6px;
+    text-align-last: center;
+    line-height: 38px;
+    color: white;
+    cursor: pointer;
+}
+#transfer {
+    position: absolute;
+    bottom: 10px;
+    left: 210px;
+    height: 40px;
+    width: 120px;
+    background: #7cb9ab;
+    border: 1px solid #e3e3e3;
+    border-radius: 6px;
+    text-align-last: center;
+    line-height: 38px;
+    color: white;
+    cursor: pointer;
+}
 .buttom:hover {
   color: #18c9dd;
   cursor: pointer;
@@ -542,6 +565,18 @@ export default {
   color: #f4f5fe;
   width: auto;
   min-height: 60px;
+}
+.hashSpan {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #6f6868;
+  font-size: 14px;
+  cursor: pointer;
+}
+.hashSpan:hover {
+  color: #06aaf9;
+  font-weight: bold;
 }
 #list {
   margin: 0 60px;

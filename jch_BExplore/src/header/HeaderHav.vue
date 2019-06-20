@@ -6,42 +6,27 @@
     </div>
     <div style="display:flex;align-items:center;">
       <div class="searchWarp">
-        <input type="text" v-model="searchContent" placeholder="请输入地址/哈希" v-on:input ="searchTokens"  @blur="closeDialog" @focus="openDialog" @keyup.enter="enterSearch" @keyup.down="downSearch" @keyup.up="upSearch">
+        <input type="text" v-model="searchContent" placeholder="请输入地址/哈希">
         <span class="serachButton" @click="confirmSearch">
           <i class="iconfont icon-sousuoicon el-icon-search"></i>
         </span>
-        <div class="dialog" id="dialog" v-show='searchContent !== "" && tokenList.length!== 0 &&showDialog' ref="dialogRef">
-          <div v-for=" (item,index) in tokenList" :key="index" class="dialogItem"  @click="jumpTokenDetail(item)"  :class="{'dialogItemBg': index===tokenListIndexes}">
-             <div>{{interceptString(tokensSplit(item,1))}}</div><div><span style="margin-right:10px;">发行方:</span>{{interceptString(tokensSplit(item,2),2)}}</div>
-          </div>
-        </div>
       </div>
-      <!-- <el-dropdown @command="switchLanguage" trigger="click">
-        <span class="el-dropdown-link">{{languageList[currentLanguage].name}}
-          <i class="iconfont icon-yuyanshezhi-xiala"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item :command="item.label" v-for="(item,index) in languageList" :key="index">{{item.name}}</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown> -->
     </div>
   </div>
 </template>
 
 <script>
-//import logo from "@/images/logo_NavHead.png";
-//import { getBlockDetail, fuzzyqueryBytokens } from "../../js/fetch";
-//import { jtWallet } from "jcc_wallet";
-//var homepageTitle = document.getElementById("homepage_title");
+import {
+  getTransactionsByHash,
+  getLedgerInformationByHash
+} from '../js/request';
+import { jtWallet } from "jcc_wallet";
 export default {
   name: "headerHav",
   data() {
     return {
-      //logo,
       searchContent: "",
       showLanguage: false,
-      tokenList: [],
-      tokenListIndexes: 0,
       showDialog: false,
       languageList: {
         zh: { label: "zh", name: "简体中文" },
@@ -60,19 +45,6 @@ export default {
     }
   },
   methods: {
-    tokensSplit(key, index = 1) {
-      if (!key) {
-        return;
-      }
-      if (key) {
-        var list = key.split("_");
-        if (index === 1) {
-          return list[0];
-        } else {
-          return list[1];
-        }
-      }
-    },
     interceptString(key, index = 1) {
       if (key && key !== "---") {
         if (key.length > 12) {
@@ -100,26 +72,21 @@ export default {
         return { value: undefined };
       }
     },
-    getHashType(key) {
-      let map = new Map([[1, "blockDetail"], [2, "tradeDetail"]]);
-      return map.get(key);
+    async getHashType(hash) {
+      let block = await getLedgerInformationByHash(hash);
+      let trade = await getTransactionsByHash(hash);
+      let res = "";
+      console.log(block,trade)
+      if(block.success&&!trade.success) {res = "blockDetail"}
+      else if(!block.success&&trade.success) {res = "tradeDetail"}
+      return res;
     },
     async jumpDetailByHash(value) {
-      let res = await getBlockDetail(value);
-      if (res.result === true && (res.code === 0 || res.code === "0")) {
-        let hashType =
-          this.getHashType(this.displayDefaultHashType(res.data).hashType) ||
-          this.getHashType(res.data.info.hashType);
-        let path = "";
-        if (hashType === "tradeDetail") {
-          path = "trade";
-        } else if (hashType === "blockDetail") {
-          path = "block";
-        } else {
-          return;
-        }
+      let res = await this.getHashType(value);
+      console.log(res)
+      if (res !== "") {
         let url =
-          window.location.origin + `/#/${path}/${hashType}/?hash=${value}`;
+          window.location.origin + `/#/${res}/?hash=${value}`;
         window.open(url, "_blank");
       } else {
         this.$message({
@@ -129,63 +96,6 @@ export default {
           showClose: true
         });
       }
-    },
-    async searchTokens() {
-      if (this.searchContent) {
-        // console.log(this.searchContent);
-        let res = await fuzzyqueryBytokens(this.searchContent);
-        if (res.result === true && (res.code === 0 || res.code === "0")) {
-          // console.log(res.data);
-          this.tokenList = res.data;
-        } else {
-          this.tokenList = [];
-        }
-      }
-      this.tokenListIndexes = 0;
-    },
-    jumpTokenDetail(token) {
-      this.searchContent = "";
-      if (token) {
-        let url = window.location.origin + `/#/tokendetail/?token=${token}`;
-        window.open(url, "_blank");
-      }
-    },
-    openDialog() {
-      this.tokenList = [];
-      this.searchContent = "";
-      this.showDialog = true;
-    },
-    closeDialog() {
-      setTimeout(() => {
-        this.showDialog = false;
-        this.tokenListIndexes = 0;
-      }, 500);
-    },
-    enterSearch() {
-      this.confirmSearch();
-    },
-    tokenListscrollTo(index) {
-      if (index >= 0 && index < this.tokenList.length) {
-        this.$refs.dialogRef.scrollTo(0, index * 36);
-      }
-    },
-    upSearch() {
-      if (this.tokenList.length > 0) {
-        this.tokenListIndexes--;
-        if (this.tokenListIndexes < 0) {
-          this.tokenListIndexes = this.tokenList.length - 1;
-        }
-      }
-      this.tokenListscrollTo(this.tokenListIndexes);
-    },
-    downSearch() {
-      if (this.tokenList.length > 0) {
-        this.tokenListIndexes++;
-        if (this.tokenListIndexes > this.tokenList.length - 1) {
-          this.tokenListIndexes = 0;
-        }
-      }
-      this.tokenListscrollTo(this.tokenListIndexes);
     },
     async confirmSearch(value) {
       this.searchContent = this.searchContent.replace(/(^\s*)|(\s*$)/g, "");
@@ -216,9 +126,6 @@ export default {
         }
       } else if (/^[0-9A-Za-z]{64}$/.test(this.searchContent)) {
         this.jumpDetailByHash(this.searchContent);
-      } else if (this.tokenList.length > 0) {
-        console.log(this.tokenList);
-        this.jumpTokenDetail(this.tokenList[this.tokenListIndexes]);
       } else {
         this.$message({
           type: "error",
@@ -301,90 +208,6 @@ export default {
     user-select: none;
     border-radius: 0 4px 4px 0;
     cursor: pointer;
-  }
-  .dialog::-webkit-scrollbar {
-    width: 5px;
-    height: 1px;
-  }
-  .dialog::-webkit-scrollbar-thumb {
-    background-color: #f5fcff;
-    background-image: -webkit-linear-gradient(
-      45deg,
-      rgba(255, 255, 255, 0.2) 25%,
-      transparent 25%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.2) 50%,
-      rgba(255, 255, 255, 0.2) 75%,
-      transparent 75%,
-      transparent
-    );
-  }
-  .dialog::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #fff;
-  }
-  .dialog {
-    position: absolute;
-    width: 360px;
-    z-index: 12;
-    font-size: 4px;
-    margin-top: 5px;
-    background: #fff;
-    border: 1px solid #d0eef5;
-    border-radius: 4px;
-    color: #898c97;
-    box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.1);
-    max-height: 360px;
-    overflow-y: auto;
-    .dialogItem {
-      display: flex;
-      justify-content: space-between;
-      align-content: center;
-      padding: 5px 10px 5px 10px;
-      height: 26px;
-      div {
-        height: 26px;
-        line-height: 26px;
-      }
-    }
-    .dialogItemBg {
-      background: rgba(245, 252, 255, 1);
-      color: #06aaf9;
-    }
-    .dialogItem:hover {
-      background: rgba(245, 252, 255, 1);
-      color: #06aaf9;
-      cursor: pointer;
-    }
-  }
-}
-.el-dropdown-link {
-  display: inline-block;
-  white-space: nowrap;
-  height: 38px;
-  border: 1px solid #18c9dd;
-  border-radius: 6px;
-  line-height: 38px;
-  color: #fff;
-  width: 96px;
-  cursor: pointer;
-  i {
-    font-size: 11px;
-    margin-left: 3px;
-    position: relative;
-    bottom: 1px;
-  }
-}
-.el-dropdown-menu {
-  background-color: #fff;
-  font-size: 14px;
-  .el-dropdown-menu__item {
-    padding: 0 20px;
-    color: #6f6868;
-  }
-  .el-dropdown-menu__item:hover {
-    font-weight: bold;
-    color: #06aaf9;
   }
 }
 </style>
