@@ -195,6 +195,7 @@ export default {
     border: none;
     border-radius: 4px 0 0 4px;
     background-color: #f9f9f9;
+    outline: none;
   }
   .serachButton {
     position: absolute;

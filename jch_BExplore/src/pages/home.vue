@@ -191,7 +191,6 @@ export default {
       }
       this.loadingTrade = true;
       let res = await getHomeData();
-    
       if (res.length > 0) {
         this.latestdeal = this.handleGetData(res);
       } else {
@@ -275,10 +274,10 @@ export default {
       this.confirmSearch();
     },
     createWallet() {
-        this.$router.push(`/home`);
+        this.$router.push(`/createWallet`);
     },
     transferAction() {
-        this.$router.push(`/home`);
+        this.$router.push(`/transferAction`);
     },
     async confirmSearch(value) {
       this.searchContent = this.searchContent.replace(/(^\s*)|(\s*$)/g, "");
