@@ -252,6 +252,50 @@ export const getHomeData = async() => {
 }
 
 
+
+// 转账
+// address 支付方的井通地址
+// postData {
+//     client_id: 当前时间戳（var client_id = "id" + new Date().getTime();）
+//     payment: {
+//         amount: {
+//             currency 币种类型
+//             issuer: "",
+//             value 数量
+//         }
+//         source 发起账号
+//         destination 目标账号
+//         memos: [] 转账备注
+//     }
+//     secret 支付方的钱包私钥
+// }
+// postData: {
+//     var client_id = "id" + new Date().getTime();
+//     var post_data = {
+//         "client_id": client_id,
+//         "payment": {
+//             "amount": {
+//                 "currency": "SWT",
+//                 "issuer": "",
+//                 "value": "0.1"
+//             },
+//             "destination": "jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC",
+//             "memos": ["test jch demo"],
+//             "source": "jK9YYLxty5GCqu2qyFMbtQp9RPwnXxkxRu"
+//         },
+//         "secret": "ssCCDeMezExV9ZsTfx7w71vnRHDKW"
+//     };
+// }
+export const transferAccounts = async (address, postData) => {
+    try {
+        let res = await api.transfer_accounts(address, postData);
+        return res;
+    } catch (error) {
+        return error;
+    }
+}
+
+
 // 关于交易类型
 // type有如下几种：
 

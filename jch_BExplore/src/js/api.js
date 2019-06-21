@@ -145,6 +145,33 @@ const api = {
                 reject(e)
             })
         })
+    },
+
+    transfer_accounts(address, post_data) {
+        var content = JSON.stringify(post_data);
+        var options = {
+            host : 'localhost',
+            port : 3000,
+            path : '/v2/accounts/'+ address +'/payments',
+            method : 'POST',
+            headers : {
+                'Content-Type' : 'application/json',
+                'Content-Length' : content.length
+            }
+        };
+        var req = http.request(options, function(res) {
+            console.log("statusCode: ", res.statusCode);
+            console.log("headers: ", res.headers);
+            var _data = '';
+            res.on('data', function(chunk) {
+                _data += chunk;
+            });
+            res.on('end', function() {
+                console.log("\n--->>\npostresult:", _data)
+            });
+        });
+        req.write(content);
+        req.end();
     }
 }
 
