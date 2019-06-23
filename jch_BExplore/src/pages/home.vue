@@ -24,7 +24,7 @@
               </span>
            </div>
            <div id="transfer" @click="transferAction">
-              <span><i class="iconfont el-icon-coin"></i>转账
+              <span><i class="iconfont el-icon-coin"></i>钱包转账
               </span>
            </div>
         </div>
