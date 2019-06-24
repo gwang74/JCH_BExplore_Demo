@@ -56,16 +56,21 @@ export default {
         async getCreat(){
             let res = await createWallet();
             console.log(res);
-            if(res){
-            this.data = res;
-            this.$message({
-            type: "info",
-            message: "创建钱包成功",
-            duration: 1600,
-            showClose: true
-            });  
-            }
-           
+            if(res&&res!=='创建钱包失败'){
+                this.data = res;
+                this.$message({
+                type: "info",
+                message: "创建钱包成功",
+                duration: 1600,
+                showClose: true
+            })}else{
+                this.data = res;
+                this.$message({
+                type: "info",
+                message: "创建钱包失败",
+                duration: 1600,
+                showClose: true
+            })}
         }
     }
 }

@@ -6,35 +6,39 @@
             <span class="block">钱包转账</span>
           </div>
         <div class="head">
-            <div class="content">
-                <div class="inputWarp">
-                <span>我的钱包地址：</span><el-input @blur="checkSource" v-model="source" class="input" type="text"/>
-            </div>
-            <div class="inputWarp">
-                <span>我的钱包密钥：</span><el-input v-model="secret" class="input" type="text"/>
-            </div>
-            <div class="inputWarp">
-                <span>对方钱包地址：</span><el-input @blur="checkAddress" v-model="destination" class="input" type="text"/>
-            </div>
-            <div class="inputWarp" style="margin-left: 32px;">
-                <span>转账数量：</span><el-input v-model="value" class="input" type="number"/>
-            </div>
-            <div class="inputWarp" style="margin-left: 32px;">
-                <span>转账币种：</span>
-                <el-select v-model="name" class="input" placeholder="请选择">
-                    <el-option
-                    v-for="item in tokenList"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name">
-                    </el-option>
-                </el-select>
-            </div>
-            <div class="inputWarp" style="margin-top: 20px;">
-                <el-button class="button" type="success" :disabled="isTrasnferAble" @click="transfer">确认转账</el-button>
-                <el-button class="button" type="info" @click="clear">取消转账</el-button>
-            </div>
-            </div>
+            <el-form :model="dataForm" ref="dataForm" class="content" :rules="rules" label-width="100px">
+                <el-form-item label="我的钱包地址" class="inputWarp" prop="source">
+                    <el-input v-model="dataForm.source" class="input" type="text"/>
+                </el-form-item>
+                <el-form-item label="我的钱包密钥" class="inputWarp" prop="secret">
+                    <el-input v-model="dataForm.secret" class="input" type="text"/>
+                </el-form-item>
+                <el-form-item label="对方钱包地址" class="inputWarp" prop="destination">
+                    <el-input v-model="dataForm.destination" class="input" type="text"/>
+                </el-form-item>
+                <el-form-item label="转账数量" class="inputWarp" prop="tranfersValue">
+                    <el-input v-model="dataForm.tranfersValue" class="input" type="number"/>
+                </el-form-item>
+                <el-form-item label="转账币种" class="inputWarp" prop="currency">
+                    <el-select v-model="dataForm.currency" class="input" clearable placeholder="请选择">
+                        <el-option
+                        v-for="item in tokenList"
+                        :key="item.name"
+                        :label="item.name"
+                        :value="item.name">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="转账备注" class="inputWarp" prop="memos">
+                    <el-input class="input" type="textarea" 
+                    :rows="2"
+                    v-model="dataForm.memos"></el-input>
+                </el-form-item>
+                <el-form-item class="inputWarp">
+                    <el-button class="button" type="primary" @click="submitForm()">确认转账</el-button>
+                    <el-button class="button" @click="resetForm()">重置</el-button>
+                </el-form-item>
+            </el-form>
         </div>
     </div>    
 </div>
@@ -46,56 +50,103 @@ import { jtWallet } from "jcc_wallet";
 export default {
     name:'transferAction',
     data(){
+        var validateAddress = (rule, value, callback) => {
+        if (!jtWallet.isValidAddress(value)) {
+          callback(new Error('请输入有效的钱包地址'));
+        } else {
+          callback();
+        }
+        };
+        var validateValue = (rule, value ,callback) => {
+            if (value <= 0) {
+                callback(new Error('转账数量必须大于0'))
+            }else {
+                callback();
+            }
+        };
         return {
             isTrasnferAble: true,
-            source:"",
-            currency:"",
-            value:"",
-            destination:"",
-            memos:"",
-            secret:"",
-             postData: {
-                client_id: "",//当前时间戳（var client_id = "id" + new Date().getTime();）
-                payment: {
-                    amount: {
-                        currency:"", //币种类型
-                        issuer:"",
-                        value:"" //数量
-                    },
-                    source:"", //发起账号
-                    destination:"",//目标账号
-                    memos:[] //转账备注
-                },
-                secret:"" //支付方的钱包私钥
+            dataForm: {
+                source:'',
+                currency:'',
+                tranfersValue:'',
+                destination:'',
+                memos:'',
+                secret:''
+            },
+            rules: {
+                source:[
+                    {required: true, message: '请输入钱包地址', trigger: 'blur' },
+                    {validator: validateAddress ,trigger: 'blur'}
+                ],
+                secret:[
+                    {required: true, message: '请输入钱包密钥', trigger: 'blur' }
+                ],
+                destination:[
+                    {required: true, message: '请输入钱包地址', trigger: 'blur' },
+                    {validator: validateAddress ,trigger: 'blur'}
+                ],
+                tranfersValue:[
+                    {required: true, message: '请输入转账数量', trigger: 'blur' },
+                    {validator: validateValue ,trigger: 'blur'}
+                ],
+                currency:[
+                    {required: true, message: '请输入转账币种', trigger: 'change' }
+                ]
             },
             tokenList:[
                 {name:''},
-                {name:"SWTC"},
-                {name:"MOAC"},
+                {name:"SWT"},
+                {name:"JCC"},
                 {name:"CNY"},
                 {name:"BTC"},
                 {name:"USDC"},
             ],
-            name:""
         }
     },
     methods: {
-        addressCheck(){
-            let res =  jtWallet.isValidAddress(this.source||this.destination);
-            if(!res){
-
+         submitForm() {
+            this.$refs['dataForm'].validate(async (valid) => {
+            if (valid) {
+                var postData =  {
+                    client_id: "id" + new Date().getTime(),//当前时间戳（var client_id = "id" + new Date().getTime();）
+                    payment: {
+                        amount: {
+                            currency: this.dataForm.currency, //币种类型
+                            issuer: "",
+                            value: this.dataForm.tranfersValue //数量
+                        },
+                        source: this.dataForm.source, //发起账号
+                        destination: this.dataForm.destination ,//目标账号
+                        memos: [this.dataForm.memos] //转账备注
+                    },
+                    secret: this.dataForm.secret //支付方的钱包私钥
+                };
+                console.log(postData);
+                let res = await transferAccounts(this.dataForm.source, postData);
+                console.log(res);
+                // if(res.success){
+                //     this.$message({
+                //     type: "info",
+                //     message: "转账成功",
+                //     duration: 1600,
+                //     showClose: true
+                // })
+                // }
+            } else {
+                this.$message({
+                    type: "info",
+                    message: "请输入必要信息",
+                    duration: 1600,
+                    showClose: true
+                })
+                return false;
             }
-        },
-        transfer() {
+            });
 
         },
-        clear() {
-            this.source = "",
-            this.currency = "",
-            this.value = "",
-            this.destination = "",
-            this.memos = "",
-            this.secret = ""
+        resetForm() {
+            this.$refs['dataForm'].resetFields();
         }
     },
     
@@ -152,11 +203,11 @@ export default {
   .input {
     float: left;
     outline: none;  
-    width: 300px;
+    width: 400px;
   }
   .button {
       float: left; 
-      width: 200px;
+      width: 180px;
   }
 }
 .head {
