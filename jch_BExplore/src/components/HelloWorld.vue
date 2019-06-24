@@ -4,115 +4,93 @@
     <h2>Essential Links</h2>
     <ul>
       <li>
-        <a
-          href="https://vuejs.org"
-          target="_blank"
-        >
-          Core Docs
-        </a>
+        <a href="https://vuejs.org" target="_blank">Core Docs</a>
       </li>
       <li>
-        <a
-          href="https://forum.vuejs.org"
-          target="_blank"
-        >
-          Forum
-        </a>
+        <a href="https://forum.vuejs.org" target="_blank">Forum</a>
       </li>
       <li>
-        <a
-          href="https://chat.vuejs.org"
-          target="_blank"
-        >
-          Community Chat
-        </a>
+        <a href="https://chat.vuejs.org" target="_blank">Community Chat</a>
       </li>
       <li>
-        <a
-          href="https://twitter.com/vuejs"
-          target="_blank"
-        >
-          Twitter
-        </a>
+        <a href="https://twitter.com/vuejs" target="_blank">Twitter</a>
       </li>
       <br>
       <li>
-        <a
-          href="http://vuejs-templates.github.io/webpack/"
-          target="_blank"
-        >
-          Docs for This Template
-        </a>
+        <a href="http://vuejs-templates.github.io/webpack/" target="_blank">Docs for This Template</a>
       </li>
     </ul>
     <h2>Ecosystem</h2>
     <ul>
       <li>
-        <a
-          href="http://router.vuejs.org/"
-          target="_blank"
-        >
-          vue-router
-        </a>
+        <a href="http://router.vuejs.org/" target="_blank">vue-router</a>
       </li>
       <li>
-        <a
-          href="http://vuex.vuejs.org/"
-          target="_blank"
-        >
-          vuex
-        </a>
+        <a href="http://vuex.vuejs.org/" target="_blank">vuex</a>
       </li>
       <li>
-        <a
-          href="http://vue-loader.vuejs.org/"
-          target="_blank"
-        >
-          vue-loader
-        </a>
+        <a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a>
       </li>
       <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-        >
-          awesome-vue
-        </a>
+        <a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-import { getTransactionsByHash, getTransactionsByaddress, getLedgerIndex, getLedgerInformationByIndex, getLedgerInformationByHash, getHomeData } from '../js/request'
+import {
+  transferAccounts,
+  getTransactionsByaddress,
+  getLedgerIndex,
+  getLedgerInformationByIndex,
+  getLedgerInformationByHash,
+  getHomeData
+} from "../js/request";
 export default {
-  name: 'HelloWorld',
-  data () {
+  name: "HelloWorld",
+  data() {
     return {
-      msg: 'Welcome to Your Vue.js App'
-    }
+      msg: "Welcome to Your Vue.js App"
+    };
   },
   mounted() {
     this.test();
   },
-  methods:{
-    async test () {
+  methods: {
+    async test() {
       // await getAccountBalance('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
       // await getAccountOrders('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
-      await getTransactionsByHash('18BA0230AE522F0F57AFED22318829E3015F012DCB28D7C376740778F0AE0823')
-      await getTransactionsByaddress('jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC')
+      let address = "jK9YYLxty5GCqu2qyFMbtQp9RPwnXxkxRu";
+      var client_id = "id" + new Date().getTime();
+      let postData = {
+        client_id: client_id,
+        payment: {
+          amount: {
+            currency: "SWT",
+            issuer: "",
+            value: "0.1"
+          },
+          destination: "jKBCwv4EcyvYtD4PafP17PLpnnZ16szQsC",
+          memos: ["test jch demo"],
+          source: "jK9YYLxty5GCqu2qyFMbtQp9RPwnXxkxRu"
+        },
+        secret: "ssCCDeMezExV9ZsTfx7w71vnRHDKW"
+      };
+      await transferAccounts(address, postData);
       // await getLedgerIndex()
       // await getLedgerInformationByIndex(13099611)
       // await getLedgerInformationByHash('2DAAE21F605C157F8FB251F81A69DE71C7FF8C29553277507B62430BE81F5C88')
       // await getHomeData();
     }
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
+h1,
+h2 {
   font-weight: normal;
 }
 ul {

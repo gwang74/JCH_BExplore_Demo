@@ -5,6 +5,7 @@ import block from '../pages/blockIndex'
 import trade from '../pages/tradeIndex'
 import blockDetail from '../pages/blockDetail'
 import tradeDetail from '../pages/tradeDetail'
+import test from '../components/HelloWorld'
 
 Vue.use(Router)
 
@@ -29,5 +30,9 @@ export default new Router({
         path: '/tradedetail',
         name: 'tradeDetail',
         component: tradeDetail
+    }, {
+        path: '/',
+        name: 'test',
+        component: test
     }]
 })
