@@ -7,6 +7,7 @@ import blockDetail from '../pages/blockDetail'
 import tradeDetail from '../pages/tradeDetail'
 import createWallet from '../pages/createWallet'
 import transferAction from '../pages/transferAction'
+import test from '../components/HelloWorld'
 
 Vue.use(Router)
 
@@ -39,5 +40,9 @@ export default new Router({
         path: '/transferAction',
         name: 'transferAction',
         component: transferAction
+    }, {
+        path: '/',
+        name: 'test',
+        component: test
     }]
 })

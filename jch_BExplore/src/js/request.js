@@ -286,9 +286,10 @@ export const getHomeData = async() => {
 //         "secret": "ssCCDeMezExV9ZsTfx7w71vnRHDKW"
 //     };
 // }
-export const transferAccounts = async (address, postData) => {
+export const transferAccounts = async(address, postData) => {
     try {
         let res = await api.transfer_accounts(address, postData);
+        console.log(res)
         return res;
     } catch (error) {
         return error;
