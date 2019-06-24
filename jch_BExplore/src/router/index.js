@@ -5,6 +5,7 @@ import block from '../pages/blockIndex'
 import trade from '../pages/tradeIndex'
 import blockDetail from '../pages/blockDetail'
 import tradeDetail from '../pages/tradeDetail'
+import walletDetail from "../pages/walletDetail"
 
 Vue.use(Router)
 
@@ -29,5 +30,9 @@ export default new Router({
         path: '/tradedetail',
         name: 'tradeDetail',
         component: tradeDetail
+    }, {
+        path: '/walletDetail',
+        name: 'walletDetail',
+        component: walletDetail
     }]
 })

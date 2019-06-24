@@ -1,18 +1,21 @@
 <template>
   <div id="tradedetail" class="blo">
     <div class="tradeDetailTitle">
-      <span class="tille">当前交易哈希:<span style="color:#06aaf9;padding-left:10px;">43EEFFC182AF96981228A6B6505DF54D528578A5314D186D235E2DEC0BAE1856</span>
+      <span class="tille">当前交易哈希:<span style="color:#06aaf9;padding-left:10px;">{{bash.hash}}</span>
       </span>
       <i class=""></i>
       <Ul class="header">
-        <li><span style="font-weight:600;">交易类型</span><span style="font-size:12px;">转账</span></li>
-        <li><span style="font-weight:600;">账本号</span><span style="font-size:12px;">13097774</span></li>
-        <li><span style="font-weight:600;">燃料费用</span><span style="font-size:12px;">0.01</span></li>
-        <li><span style="font-weight:600;">转账金额</span><span style="font-size:12px;">0.003201 WYB</span></li>
-        <li><span style="font-weight:600;">交易时间</span><span style="font-size:12px;">2019-06-17 09:45:30</span></li>
-        <li><span style="font-weight:600;">交易对家</span><span style="font-size:12px;">jMouTdrZU56WuQt4L6WgfwaCFkD2k1Xmbr</span></li>
-        <li><span style="font-weight:600;">交易结果</span><span style="font-size:12px;">交易成功</span></li>
-        <li><span style="font-weight:600;">交易备注:</span><span style="font-size:12px;">消耗微饮产出NTCC</span></li>
+        <li><span style="font-weight:600;">交易类型</span><span style="font-size:12px;">{{bash.type}}</span></li>
+        <li><span style="font-weight:600;">账本号</span><span style="font-size:12px;">{{bash.zbh}}</span></li>
+        <li><span style="font-weight:600;">交易发起方</span><span 
+        @click="jumpLastBlochDetail(bash.fqf)" class="lastHash">{{bash.fqf}}</span></li>
+        <li><span style="font-weight:600;">交易时间</span><span style="font-size:12px;">{{bash.time}}</span></li>
+        <li><span style="font-weight:600;">燃料费用</span><span style="font-size:12px;">{{bash.fee}}</span></li>
+        <li><span style="font-weight:600;">委托价格</span><span style="font-size:12px;">{{bash.wtj}}</span></li>
+        <li><span style="font-weight:600;">交易结果</span><span style="font-size:12px;">{{bash.jyjg}}</span></li>
+        <li><span style="font-weight:600;">成交金额</span><span style="font-size:12px;">{{bash.jyje}}</span></li>
+        <li><span style="font-weight:600;">交易备注</span><span style="font-size:12px;">{{bash.jybz}}</span></li>
+        <li><span style="font-weight:600;">交易方式</span><span style="font-size:12px;">{{bash.jyfs}}</span></li>
       </Ul>
     </div>
 
@@ -53,8 +56,19 @@
   </div>
 </template>
 <script>
+import {
+  getTransactionsByHash,
+} from "../js/request";
+import {
+       getTransactionAmount,
+       getType,
+       getOffertype
+} from '../js/utils';
 export default {
-  name: "blockDetail",
+  name: "tradeDetail",
+  created() {
+    this.getData();
+  },
   data() {
     return {
       pickerOptions: {
@@ -64,6 +78,7 @@ export default {
       },
       blockList: [],
       hashtime: {},
+      latestdeal:[],
       bash: {},
       hash: "",
       loading: false,
@@ -72,106 +87,80 @@ export default {
       gopage: 1
     };
   },
-  created() {
-    // this.getData();
-  },
   methods: {
-    async getTranstionListByHash() {
-      this.blockList = [];
-      if (this.loading) {
-        return;
-      }
-      this.loading = true;
-      let data = {
-        page: this.currentPage || "1",
-        size: 20,
-        total: this.total,
-        hash: this.hash || ""
-      };
-      let res = await getTransListByHash(data);
-      if (res.result === true && (res.code === 0 || res.code === "0")) {
-        this.blockList = this.handleHistoryData(res);
-      } else {
-        this.blockList = [];
-
-        this.gopage = 0;
-      }
-      this.loading = false;
-    },
     async getData() {
-      if (this.loading) {
-        return;
-      }
-      this.loading = true;
+      debugger
       this.hash = this.$route.query.hash;
-      let res = await getBlockDetail(this.hash);
-      if (res.result === true && (res.code === 0 || res.code === "0")) {
-        this.total = res.data.count;
-        this.blockList = this.handleHistoryData(res);
-        this.bash = res.data.info;
-        // this.bash = {};
-      } else {
-        this.blockList = [];
-        this.bash = {};
-        this.total = 0;
-        this.gopage = 0;
+      // this.hash = "E28806BB7BE44C713AB02894FA7C12D495D0FEE4C2E98DDED509C9973453D26C
+      let res = await getTransactionsByHash(this.hash);
+      if (res.result === "tesSUCCESS") {
+        this.bash = {
+          hash: this.hash,
+          type: getType(res.type),
+          zbh: res.ledger,
+          fqf: res.account,
+          fee: res.fee,
+          time: res.date,
+          wtj: res.effects.price,
+          jyjg: "---",
+          jyje: "---",
+          jybz: "---",
+          jyfs: getOffertype(res.offertype)
+        };
       }
-      this.loading = false;
     },
-    clearGopage() {
-      this.gopage = "";
-    },
-    handleHistoryData(res) {
-      let i = 0;
-      let list = [];
-      if (res && res.data && res.data.list.length > 0) {
-        for (; i < res.data.list.length; i++) {
-          list.push({
-            matchFlag:
-              this.getMatchFlag(res.data.list[i].matchFlag) ||
-              this.getMatchFlag(
-                this.judgeTransferFailure(res.data.list[i].succ)
-              ),
-            sort: (this.currentPage - 1) * 20 + i + 1,
-            type: res.data.list[i].type,
-            flag: res.data.list[i].flag,
-            displayDifferentBg: this.getTypeBg(res.data.list[i].type) || "",
-            displayDifferentColor:
-              this.getFlagColor(res.data.list[i].flag) ||
-              this.getFlagColor(res.data.list[i].type) ||
-              "",
-            takerPaysCurrency: this.interceptStringByEllipsis(
-              this.displayDefaultCurrency(res.data.list[i].takerPays).currency
-            ),
-            takerPaysValue: this.displayDefaultValues(
-              res.data.list[i].takerPays
-            ).value,
-            takerGetsCurrency: this.interceptStringByEllipsis(
-              this.displayDefaultCurrency(res.data.list[i].takerGets).currency
-            ),
-            takerGetsValue: this.displayDefaultValues(
-              res.data.list[i].takerGets
-            ).value,
-            takerCurreny: this.interceptStringByEllipsis(
-              this.displayDefaultCurrency(res.data.list[i].amount).currency
-            ),
-            takerValue: this.displayDefaultValues(res.data.list[i].amount)
-              .value,
-            fee: res.data.list[i].fee || "---",
-            account: res.data.list[i].account || "---",
-            _id: res.data.list[i]._id || "---"
-          });
-        }
-        this.total = res.data.count;
-        this.allpage = Math.ceil(this.total / 20);
-        this.gopage = this.allpage;
-      } else {
-        this.total = 0;
-        this.allpage = 0;
-        this.gopage = 0;
-      }
-      return list;
-    },
+   
+    // handleHistoryData(res) {
+    //   let i = 0;
+    //   let list = [];
+    //   if (res && res.data && res.data.list.length > 0) {
+    //     for (; i < res.data.list.length; i++) {
+    //       list.push({
+    //         matchFlag:
+    //           this.getMatchFlag(res.data.list[i].matchFlag) ||
+    //           this.getMatchFlag(
+    //             this.judgeTransferFailure(res.data.list[i].succ)
+    //           ),
+    //         sort: (this.currentPage - 1) * 20 + i + 1,
+    //         type: res.data.list[i].type,
+    //         flag: res.data.list[i].flag,
+    //         displayDifferentBg: this.getTypeBg(res.data.list[i].type) || "",
+    //         displayDifferentColor:
+    //           this.getFlagColor(res.data.list[i].flag) ||
+    //           this.getFlagColor(res.data.list[i].type) ||
+    //           "",
+    //         takerPaysCurrency: this.interceptStringByEllipsis(
+    //           this.displayDefaultCurrency(res.data.list[i].takerPays).currency
+    //         ),
+    //         takerPaysValue: this.displayDefaultValues(
+    //           res.data.list[i].takerPays
+    //         ).value,
+    //         takerGetsCurrency: this.interceptStringByEllipsis(
+    //           this.displayDefaultCurrency(res.data.list[i].takerGets).currency
+    //         ),
+    //         takerGetsValue: this.displayDefaultValues(
+    //           res.data.list[i].takerGets
+    //         ).value,
+    //         takerCurreny: this.interceptStringByEllipsis(
+    //           this.displayDefaultCurrency(res.data.list[i].amount).currency
+    //         ),
+    //         takerValue: this.displayDefaultValues(res.data.list[i].amount)
+    //           .value,
+    //         fee: res.data.list[i].fee || "---",
+    //         account: res.data.list[i].account || "---",
+    //         _id: res.data.list[i]._id || "---"
+    //       });
+    //     }
+    //     this.total = res.data.count;
+    //     this.allpage = Math.ceil(this.total / 20);
+    //     this.gopage = this.allpage;
+    //   } else {
+    //     this.total = 0;
+    //     this.allpage = 0;
+    //     this.gopage = 0;
+    //   }
+    //   return list;
+    // },
     isEmptyObject(bash) {
       if (isEmptyObject(bash)) {
         return true;
@@ -207,7 +196,6 @@ export default {
         parseInt(this.gopage) >= parseInt(1) &&
         Number.isInteger(parseInt(this.gopage))
       ) {
-        console.log(this.gopage, this.total);
         this.currentPage = this.gopage;
         this.loading = false;
         this.getTranstionListByHash();
@@ -245,7 +233,7 @@ export default {
     },
     jumpLastBlochDetail(hash) {
       if (hash) {
-        let url = window.location.origin + `/#/block/blockDetail/?hash=${hash}`;
+        let url = window.location.origin + `/#/walletDetail/?hash=${hash}`;
         window.open(url, "_blank");
       }
     },
