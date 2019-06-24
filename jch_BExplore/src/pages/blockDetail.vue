@@ -1,21 +1,35 @@
 <template>
+<div>
+  <headerHav></headerHav>
   <div id="blockdetail" class="blo">
     <div class="blockDetailTitle">
       <span class="tille">
-        当前区块:<span style="color:#06aaf9;padding-left:10px;">13088562</span>
+        当前区块:
+        <span style="color:#06aaf9;padding-left:10px;">{{this.bash.block}}</span>
       </span>
-      <span class="tille" >区块哈希值:<span style="padding-left:10px;text-align:right;">56C6C3622FF95A0A722EB502E72C9AE7B191337F0BE54A65BF85BDA710608F1B</span>
+      <span class="tille">
+        区块哈希值:
+        <span style="padding-left:10px;text-align:right;">{{bash._id}}</span>
       </span>
-      <i class=""></i>
+      <i class></i>
       <Ul class="header">
-        <li><span style="font-weight:600;">关闭时间</span><span style="font-size:12px;">2019-06-16 08:10:10</span></li>
-         <li><span style="font-weight:600;">交易数量</span><span style="font-size:12px;">４</span></li>
-        <li><span style="font-weight:600;">上一区块哈希值</span><span @click="jumpLastBlochDetail(bash.parentHash)" class="lastHash">56C6C3622FF95A0A722EB502E72C9AE7B191337F0BE54A65BF85BDA710608F1B</span></li>
+        <li>
+          <span style="font-weight:600;">关闭时间</span>
+          <span style="font-size:12px;">{{bash.time}}</span>
+        </li>
+        <li>
+          <span style="font-weight:600;">交易数量</span>
+          <span style="font-size:12px;">{{bash.transNum}}</span>
+        </li>
+        <li>
+          <span style="font-weight:600;">上一区块哈希值</span>
+          <span @click="jumpLastBlochDetail(bash.parentHash)" class="lastHash">{{bash.parentHash}}</span>
+        </li>
       </Ul>
       <!-- <Ul v-show="isEmptyObject(bash)">
         <div v-if="loading"  style="height:79px;width:100%; border:1.8px solid #c1e9f1;border-radius: 8px;margin-bottom:20px;" v-loading="true" element-loading-spinner="el-icon-loading" :element-loading-text="$t('message.desperateLoading')"></div>
         <div v-else  style="height:80px;width:100%;text-align:center;line-height:80px;color:#909399;background:#fff;margin-bottom:20px; border: 1.8px solid #c1e9f1;border-radius: 8px;   ">{{$t('message.home.notransaction')}}</div>
-      </Ul> -->
+      </Ul>-->
     </div>
 
     <div class="bockList">
@@ -26,277 +40,135 @@
             <div v-if="loadingTrade"   style="height:100px;width:100%" v-loading="true" element-loading-spinner="el-icon-loading" element-loading-text="加载中"></div>
              <div class="noDataHome" v-else >
                  <i class="iconfont icon-zanwushuju1 "></i>
-                  暂无数据
+                  加载中
             </div>
            </ul>
           <el-table-column  width="30px"></el-table-column>
            <el-table-column  prop="sort" label="序号" min-width="8%" align="left" header-align="left"></el-table-column>
            <el-table-column prop="type" label="交易类型" id="ellipsis" width="130px" align="left" header-align="left">
-             <template slot-scope="scope">
-              <div style="display: flex;align-items: center;"> <i :class="scope.row.displayDifferentBg" style="margin-right:6px;"></i>--</div>
-              <!-- <span :class="scope.row.displayDifferentBg" style="margin-right:6px;"></span> -->
-            </template>
           </el-table-column>
-           <el-table-column prop="flag" label="交易方式" id="ellipsis" min-width="10%" align="center">
-               <template slot-scope="scope">
-                  <span :style="{ color:scope.row.displayDifferentColor }">--</span>
-              </template>
+           <el-table-column prop="mode" label="交易方式" id="ellipsis" min-width="10%" align="center">
           </el-table-column>
           <el-table-column prop="_id"  label="交易哈希"  id="ellipsis" align="center" header-align="center" min-width="47%">
             <template slot-scope="scope">
-              <span class="hashSpan" @click="jumpDetail('tradeDetail',scope.row._id)">{{handleData(scope.row._id)}}</span>
+              <span class="hashSpan" @click="jumpTradeDetail(scope.row._id)">{{scope.row._id}}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="initiator"  label="发起方"  id="ellipsis"  align="right" header-align="right"  min-width="22%" >
+          <el-table-column prop="initiator"  label="发起方"  id="ellipsis"  align="right" header-align="right"  min-width="28%" >
+            <template slot-scope="scope">
+                  <span class="hashSpan" @click="jumpWalletDetail(scope.row.initiator)">{{scope.row.initiator}}</span>
+              </template>
           </el-table-column>
           <el-table-column prop="fee" label="费用" id="fee" min-width="10%" align="center">
                <template slot-scope="scope">
-                  <span :style="{ color:scope.row.fee }">--</span>
+                  <span class="spanAccount">{{scope.row.fee}}SWTC</span>
               </template>
           </el-table-column>
-          <el-table-column prop="count" label="交易内容" id="ellipsis" min-width="10%" align="center">
-               <template slot-scope="scope">
-                  <span :style="{ color:scope.row.count }">--</span>
-              </template>
+          <el-table-column prop="transactionAmount"  label="交易内容"  id="ellipsis"  align="right" header-align="right"  min-width="22%" >
           </el-table-column>
-         
           <el-table-column width="30px"></el-table-column>
         </el-table>
       </div>
     </div>
   </div>
+</div>
 </template>
 <script>
+import {
+  getLedgerInformationByHash,
+  getTransactionsByHash
+} from "../js/request";
+import {
+       getTransactionAmount,
+       getType,
+       getOffertype
+} from '../js/utils';
 export default {
   name: "blockDetail",
+  created() {
+    this.getData();
+  },
   data() {
     return {
-      pickerOptions: {
-        disabledDate(time) {
-          return time.getTime() > Date.now();
-        }
-      },
       blockList: [],
       hashtime: {},
       bash: {},
       hash: "",
+      latestdeal: [],
+      loadingTrade: false,
       loading: false,
       total: 0,
       currentPage: 1,
       gopage: 1
     };
   },
-  created() {
-    // this.getData();
-  },
-  methods: {
-    async getTranstionListByHash() {
-      this.blockList = [];
-      if (this.loading) {
-        return;
-      }
-      this.loading = true;
-      let data = {
-        page: this.currentPage || "1",
-        size: 20,
-        total: this.total,
-        hash: this.hash || ""
-      };
-      let res = await getTransListByHash(data);
-      if (res.result === true && (res.code === 0 || res.code === "0")) {
-        this.blockList = this.handleHistoryData(res);
-      } else {
-        this.blockList = [];
 
-        this.gopage = 0;
-      }
-      this.loading = false;
-    },
+  methods: {
     async getData() {
-      if (this.loading) {
-        return;
-      }
-      this.loading = true;
+      // if (this.loading) {
+      //   return;
+      // }
+      // this.loading = true;
       this.hash = this.$route.query.hash;
-      let res = await getBlockDetail(this.hash);
-      if (res.result === true && (res.code === 0 || res.code === "0")) {
-        this.total = res.data.count;
-        this.blockList = this.handleHistoryData(res);
-        this.bash = res.data.info;
-        // this.bash = {};
+      let res = await getLedgerInformationByHash(this.hash);
+      if (res.success === true) {
+        this.bash = {
+          block: res.seqNum,
+          _id: res.ledger_hash,
+          time: res.close_time_human,
+          transNum: res.transactionLength,
+          parentHash: res.parent_hash
+        };
+        this.latestdeal = await this.handleHistoryData(res);
       } else {
-        this.blockList = [];
         this.bash = {};
-        this.total = 0;
-        this.gopage = 0;
+        this.latestdeal = [];
       }
-      this.loading = false;
     },
     clearGopage() {
       this.gopage = "";
     },
-    handleHistoryData(res) {
+    async handleHistoryData(res) {
       let i = 0;
       let list = [];
-      if (res && res.data && res.data.list.length > 0) {
-        for (; i < res.data.list.length; i++) {
+      if (res && res.transactions.length > 0) {
+        for (; i < res.transactions.length; i++) {
+          let results = await getTransactionsByHash(res.transactions[i]);
           list.push({
-            matchFlag:
-              this.getMatchFlag(res.data.list[i].matchFlag) ||
-              this.getMatchFlag(
-                this.judgeTransferFailure(res.data.list[i].succ)
-              ),
-            sort: (this.currentPage - 1) * 20 + i + 1,
-            type: res.data.list[i].type,
-            flag: res.data.list[i].flag,
-            displayDifferentBg: this.getTypeBg(res.data.list[i].type) || "",
-            displayDifferentColor:
-              this.getFlagColor(res.data.list[i].flag) ||
-              this.getFlagColor(res.data.list[i].type) ||
-              "",
-            takerPaysCurrency: this.interceptStringByEllipsis(
-              this.displayDefaultCurrency(res.data.list[i].takerPays).currency
-            ),
-            takerPaysValue: this.displayDefaultValues(
-              res.data.list[i].takerPays
-            ).value,
-            takerGetsCurrency: this.interceptStringByEllipsis(
-              this.displayDefaultCurrency(res.data.list[i].takerGets).currency
-            ),
-            takerGetsValue: this.displayDefaultValues(
-              res.data.list[i].takerGets
-            ).value,
-            takerCurreny: this.interceptStringByEllipsis(
-              this.displayDefaultCurrency(res.data.list[i].amount).currency
-            ),
-            takerValue: this.displayDefaultValues(res.data.list[i].amount)
-              .value,
-            fee: res.data.list[i].fee || "---",
-            account: res.data.list[i].account || "---",
-            _id: res.data.list[i]._id || "---"
+            sort: i + 1,
+            type: getType(results.type),
+            mode: getOffertype(results.offertype),
+            _id: results.hash,
+            initiator: results.account,
+            fee: results.fee,
+            count: "-"
           });
         }
-        this.total = res.data.count;
-        this.allpage = Math.ceil(this.total / 20);
-        this.gopage = this.allpage;
       } else {
-        this.total = 0;
-        this.allpage = 0;
-        this.gopage = 0;
+        // this.total = 0;
+        // this.allpage = 0;
+        // this.gopage = 0;
       }
       return list;
     },
-    isEmptyObject(bash) {
-      if (isEmptyObject(bash)) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    cnyTransformCNT(value) {
-      if (value === "CNY") {
-        return "CNT";
-      } else {
-        return value;
-      }
-    },
-    displayDefaultValues(value) {
-      if (value) {
-        return value;
-      } else {
-        return { value: undefined };
-      }
-    },
-    displayDefaultCurrency(value) {
-      if (value) {
-        return value;
-      } else {
-        return { currency: undefined };
-      }
-    },
-    jumpSizeChange() {
-      if (
-        this.currentPage !== parseInt(this.gopage) &&
-        parseInt(this.gopage) <= parseInt(this.allpage) &&
-        parseInt(this.gopage) >= parseInt(1) &&
-        Number.isInteger(parseInt(this.gopage))
-      ) {
-        console.log(this.gopage, this.total);
-        this.currentPage = this.gopage;
-        this.loading = false;
-        this.getTranstionListByHash();
-      }
-    },
-    handleCurrentChange(val) {
-      this.currentPage = val;
-      this.loading = false;
-      this.getTranstionListByHash();
-    },
-    handleGetData(res) {
-      let i = 0;
-      let list = [];
-      for (; i < res.length; i++) {
-        list.push({
-          _id: res[i]._id,
-          transNum: res[i].transNum,
-          hash: res[i].hash,
-          time: this.handleHashtime(res[i].time)
-        });
-      }
-      return list;
-    },
-    jumpDetail(hash) {
-      if (hash) {
-        let url = window.location.origin + `/#/trade/tradeDetail/?hash=${hash}`;
-        window.open(url, "_blank");
-      }
-    },
-    jumpWalletPage(value) {
-      if (value && value !== "---") {
-        let url = window.location.origin + `/#/wallet/?wallet=${value}`;
-        window.open(url, "_blank");
-      }
-    },
+
     jumpLastBlochDetail(hash) {
-      if (hash) {
-        let url = window.location.origin + `/#/block/blockDetail/?hash=${hash}`;
-        window.open(url, "_blank");
-      }
+      let url = window.location.origin + `/#/blockDetail/?hash=${hash}`;
+      window.open(url, "_blank");
     },
-    judgeTransferFailure(value) {
-      if (value !== "tesSUCCESS") {
-        return "zhuanzhangshiba";
-      }
+
+    jumpTradeDetail(hash) {
+      let url = window.location.origin + `/#/tradeDetail/?hash=${hash}`;
+      window.open(url, "_blank");
     },
-    handleHashtime(time) {
-      if (time) {
-        let { fillZero } = this;
-        let dateIn = new Date((time + 946684800) * 1000);
-        let hashTime = "";
-        hashTime =
-          fillZero(dateIn.getFullYear()) +
-          "-" +
-          fillZero(dateIn.getMonth() + 1) +
-          "-" +
-          fillZero(dateIn.getDate()) +
-          " " +
-          fillZero(dateIn.getHours()) +
-          ":" +
-          fillZero(dateIn.getMinutes()) +
-          ":" +
-          fillZero(dateIn.getSeconds());
-        return hashTime;
-      }
+
+    jumpWalletDetail(hash) {
+      let url = window.location.origin + `/#/walletDetail/?hash=${hash}`;
+      window.open(url, "_blank");
     },
-    fillZero(value) {
-      if (value < 10) {
-        value = "0" + value;
-      }
-      return value;
-    }
+    
   }
 };
-  
 </script>
 
 <style lang="scss" scoped>
@@ -338,7 +210,7 @@ export default {
     color: #18c9dd;
   }
   .header {
-    width: 100%;
+    width: 97%;
     overflow: hidden;
     border: 1.8px solid #c1e9f1;
     height: 120px;
@@ -361,7 +233,6 @@ export default {
     }
   }
 }
-
 
 .bockList {
   background-color: #f2f8fc;
@@ -388,6 +259,16 @@ export default {
   cursor: pointer;
   font-weight: 600;
 }
-
-
+.hashSpan {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #6f6868;
+  font-size: 14px;
+  cursor: pointer;
+}
+.hashSpan:hover {
+  color: #06aaf9;
+  font-weight: bold;
+}
 </style>

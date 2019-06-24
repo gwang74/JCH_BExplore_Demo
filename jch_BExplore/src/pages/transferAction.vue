@@ -125,18 +125,18 @@ export default {
                 console.log(postData);
                 let res = await transferAccounts(this.dataForm.source, postData);
                 console.log(res);
-                // if(res.success){
-                //     this.$message({
-                //     type: "info",
-                //     message: "转账成功",
-                //     duration: 1600,
-                //     showClose: true
-                // })
-                // }
+                if(res.success){
+                    this.$message({
+                    type: "info",
+                    message: "转账成功",
+                    duration: 1600,
+                    showClose: true
+                })
+                }
             } else {
                 this.$message({
                     type: "info",
-                    message: "请输入必要信息",
+                    message: "转账失败",
                     duration: 1600,
                     showClose: true
                 })

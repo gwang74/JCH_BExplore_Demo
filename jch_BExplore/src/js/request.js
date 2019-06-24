@@ -289,7 +289,6 @@ export const getHomeData = async() => {
 export const transferAccounts = async(address, postData) => {
     try {
         let res = await api.transfer_accounts(address, postData);
-        console.log(res)
         return res;
     } catch (error) {
         return error;

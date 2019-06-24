@@ -8,6 +8,7 @@ import tradeDetail from '../pages/tradeDetail'
 import createWallet from '../pages/createWallet'
 import transferAction from '../pages/transferAction'
 import test from '../components/HelloWorld'
+import walletDetail from "../pages/walletDetail"
 
 Vue.use(Router)
 
@@ -42,7 +43,11 @@ export default new Router({
         component: transferAction
     }, {
         path: '/',
-        name: 'test',
-        component: test
+        name: 'home',
+        component: home
+    }, {
+        path: '/walletDetail',
+        name: 'walletDetail',
+        component: walletDetail
     }]
 })

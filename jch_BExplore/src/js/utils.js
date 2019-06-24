@@ -68,6 +68,27 @@ export const getType = (type) => {
         case "offercancel":
             res = "撤销委托";
             break;
+        case "offereffect":
+            res = "被动成交";
+            break;
+        case "received":
+            res = "收到";
+            break;
+    }
+    return res;
+}
+
+export const getOffertype = (type) => {
+    let res = "";
+    switch (type) {
+        case "buy":
+            res = "买入";
+            break;
+        case "sell":
+            res = "卖出";
+            break;
+        default: 
+            res = "--";
     }
     return res;
 }
