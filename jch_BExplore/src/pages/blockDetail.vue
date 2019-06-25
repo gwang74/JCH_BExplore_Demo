@@ -64,7 +64,7 @@
                   <span class="spanAccount">{{scope.row.fee}}SWTC</span>
               </template>
           </el-table-column>
-          <el-table-column prop="transactionAmount"  label="交易内容"  id="ellipsis"  align="right" header-align="right"  min-width="22%" >
+          <el-table-column prop="count"  label="交易内容"  id="ellipsis"  align="right" header-align="right"  min-width="22%" >
           </el-table-column>
           <el-table-column width="30px"></el-table-column>
         </el-table>
@@ -134,6 +134,13 @@ export default {
       if (res && res.transactions.length > 0) {
         for (; i < res.transactions.length; i++) {
           let results = await getTransactionsByHash(res.transactions[i]);
+          var count = "--";
+          if (results.type === "offernew" || results.type === "offercancel") {
+            count = results.effects[0].type + results.effects[0].amount + results.effects[0].pair;
+          }　else if (results.type === "sent") {
+            count = results.amount.value + results.amount.currency;
+          }
+          debugger
           list.push({
             sort: i + 1,
             type: getType(results.type),
@@ -141,7 +148,7 @@ export default {
             _id: results.hash,
             initiator: results.account,
             fee: results.fee,
-            count: "-"
+            count: count
           });
         }
       } else {
@@ -240,7 +247,7 @@ export default {
 }
 
 .title {
-  background: linear-gradient(to right, #0ab1f2, #26e0cc);
+  background: linear-gradient(to right, #2f7599, #38a095);
   height: 40px;
   line-height: 40px;
   text-align: center;

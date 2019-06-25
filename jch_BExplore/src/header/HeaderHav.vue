@@ -113,7 +113,7 @@ export default {
       ) {
         if (jtWallet.isValidAddress(this.searchContent)) {
           let url =
-            window.location.origin + `/#/wallet/?wallet=${this.searchContent}`;
+            window.location.origin + `/#/walletDetail/?hash=${this.searchContent}`;
           window.open(url, "_blank");
           // }
         } else {

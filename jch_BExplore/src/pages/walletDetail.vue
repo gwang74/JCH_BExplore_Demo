@@ -268,7 +268,8 @@ export default {
          for (; i<res.length; i++) {
            var jydj = "--";
            if(res[i].type === "sent" || res[i].type === "offereffect") {
-             jydj　=　res[i].effects[0].counterparty.account;
+            //  jydj　=　res[i].effects[0].counterparty.account;
+            jydj　=　"--";
            } else {
              jydj　=　"--";
            }
@@ -876,7 +877,7 @@ export default {
     margin-bottom: 20px;
   }
   .walletTitle {
-    background: linear-gradient(to right, #0ab1f2, #26e0cc);
+    background: linear-gradient(to right,#2f7599, #38a095);
     height: 40px;
     line-height: 40px;
     width: 100%;
