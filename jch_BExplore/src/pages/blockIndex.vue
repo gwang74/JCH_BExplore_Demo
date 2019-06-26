@@ -40,7 +40,7 @@
           <el-table-column  width="30px" ></el-table-column>
         </el-table>
       </div>
-      <ul class="pagination">
+      <ul class="pagination"  style="list-style: none;">
         <li>
           <el-pagination background layout="prev, pager, next" :total="total" :page-size="20" :current-page="parseInt(currentPage)" @current-change="handleCurrentChange"></el-pagination>
         </li>

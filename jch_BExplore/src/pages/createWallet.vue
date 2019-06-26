@@ -13,17 +13,17 @@
                     <div class="margin">
                         <span>钱包地址：</span>
                         <el-input class="long"
-                            disabled
+                            readonly
                             type="text"
                             placeholder="无"
                             v-model="data.address">
                         </el-input>
                     </div>
                     <div class="margin">
-                        <span>钱包私钥：</span>
+                        <span>钱包秘钥：</span>
                         <el-input class="long"
-                            disabled
                             type="text"
+                            readonly
                             placeholder="无"
                             v-model="data.secret">
                         </el-input>
@@ -137,14 +137,12 @@ export default {
         }
     }
 }
+
 .margin {
     margin-top: 20px;
     .long {
        width: 500px; 
-       color: #3e3f45;
-       border: 0px;
     }
-    
 }
 
 
