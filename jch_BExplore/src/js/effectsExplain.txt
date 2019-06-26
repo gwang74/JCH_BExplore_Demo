@@ -1,0 +1,88 @@
+交易效果effects
+effects是每个用户交易记录信息里面的交易效果，是个JSON数组，数字可以包含多项，每项内容都包含效果类型effect字段，根据effect的不同里面的内容也不同：
+
+1.offer_funded，交易实际成交；交易提示信息建议：交易成交，您以XXX价格买了/卖了XXX卖了/买了XXX，价格是XXX；其中包含的信息有：
+
+参数		类型	说明
+effect		String	offer_funded
+type		String	交易类型，sell或buy
+pair		String	交易的货币对
+amount		String	挂单的数量
+got		Object	用户获得的金额
+value	String	金额
+currency	String	货币
+issuer	String	货币发行方，SWT为空
+paid		Object	用户付出的金额
+value	String	金额
+currency	String	货币
+issuer	String	货币发行方，SWT为空
+price		String	价格，4位小数
+seq		Integer	挂单序号，表示被成交的单子
+counterparty		Object	对家信息
+account	String	对家账号
+seq	Integer	对家单子序号
+hash	String	对家交易hash
+2.offer_partially_funded，交易部分成交；交易提示信息建议：交易部分成交，您以XXX价格买了/卖了XXX卖了/买了XXX，价格是XXX，剩余挂单由于金额不足被取消（可选，根据cancelled），还剩XXX单子（可选，根据remaining）；其中包含的信息有：
+
+参数		类型	说明
+effect		String	offer_partially_funded
+type		String	交易类型，sold或bought
+got		Object	用户获得的金额
+value	String	金额
+currency	String	货币
+issuer	String	货币发行方，SWT为空
+paid		Object	用户付出的金额
+value	String	金额
+currency	String	货币
+issuer	String	货币发行方，SWT为空
+price		String	价格，4位小数
+seq		Integer	挂单序号，表示被成交的单子
+cancelled		Boolean	剩余的单子是否被取消了，可选
+remaining		Boolean	是否有剩余的单子，可选
+pair		String	交易的货币对,remaining为true才有
+amount		String	挂单的数量，remaining为true才有
+price		String	挂单的价格，remaining为true才有
+counterparty		Object	对家信息
+account	String	对家账号
+seq	Integer	对家单子序号
+hash	String	对家交易hash
+3.offer_cancelled，被关联交易取消单子，交易单子被取消；交易提示信息建议：由于缺少金额单子XXX被取消；其中包含的信息有：
+
+参数	类型	说明
+effect	String	offer_cancelled
+type	String	交易类型，sell或buy
+pair	String	交易的货币对
+amount	String	挂单的数量
+price	String	挂单的价格
+seq	Integer	被取消单子的序号
+hash	String	被取消单子的hash
+deleted	Boolean	单子是否被删除，取消单子为true
+4.offer_created，交易单子创建；交易提示信息建议：您创建了一个买/卖单，以XXX交易XXX；其中包含的信息有：
+
+参数	类型	说明
+effect	String	offer_created
+type	String	交易类型，sell或buy
+pair	String	交易的货币对
+amount	String	挂单的数量
+price	String	挂单的价格
+seq	Integer	新建的单子序号
+5.offer_bought，挂单买到/卖出，成交的单子信息；交易提示信息建议：您以XXX价格买了/卖了XXX卖了/买了XXX；其中包含的信息有：
+
+参数		类型	说明
+effect		String	offer_bought
+type		String	交易类型，sell或buy
+got		Object	用户获得的金额
+value	String	金额
+currency	String	货币
+issuer	String	货币发行方，SWT为空
+paid		Object	用户付出的金额
+value	String	金额
+currency	String	货币
+issuer	String	货币发行方，SWT为空
+price		String	价格，4位小数
+pair		String	交易的货币对
+amount		String	挂单的数量
+counterparty		Object	对家信息
+account	String	对家账号
+seq	Integer	对家单子序号
+hash	String	对家交易hash
