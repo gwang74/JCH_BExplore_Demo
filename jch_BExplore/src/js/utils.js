@@ -92,3 +92,19 @@ export const getOffertype = (type) => {
     }
     return res;
 }
+
+
+export const getDealtype = (type) => {
+    let res = "";
+    switch (type) {
+        case "sold":
+            res = "卖出";
+            break;
+        case "bought":
+            res = "买入";
+            break;
+        default: 
+            res = "--";
+    }
+    return res;
+}
