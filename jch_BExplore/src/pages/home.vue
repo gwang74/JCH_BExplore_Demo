@@ -6,11 +6,8 @@
      <section class="init">
        <div class="top">
          <div id="index_circle"><img src="" style="max-width:462px;height:264px;"></div>
-         <div class="topLeft">
-            <img src=""  id="index_net">
-         </div>
          <div class="topRight" >
-          <div class="index"><img src=""></div>
+          <div class="index"><img src="../images/logo.png" style="width:80px;margin-top:20px"></div>
             <p class="browser">井创SWTC公链浏览器</p>
             <div class="searchWarp">
               <input type="text" v-model="searchContent" :placeholder="searchPlacehoder">
@@ -128,7 +125,7 @@
     <section>
       <div class="endEnd">
         <div class="endEndLeft" >
-          <img src="">
+          <img src="../images/logo.png">
           <span>井创SWTC公链浏览器</span>
           <div></div>
           <span>合肥井创数字科技有限公司</span>

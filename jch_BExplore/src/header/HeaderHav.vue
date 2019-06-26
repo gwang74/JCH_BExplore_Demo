@@ -1,7 +1,7 @@
 <template>
   <div id="headerHav">
     <div class="headLogo" @click="backhome('home')">
-      <img src="" >
+      <img src="../images/logo.png" >
       <span>井创SWTC公链浏览器</span>
     </div>
     <div style="display:flex;align-items:center;">

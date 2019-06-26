@@ -10,7 +10,7 @@
                 <el-form-item label="我的钱包地址" class="inputWarp" prop="source">
                     <el-input v-model="dataForm.source" class="input" type="text"/>
                 </el-form-item>
-                <el-form-item label="我的钱包密钥" class="inputWarp" prop="secret">
+                <el-form-item label="我的钱包秘钥" class="inputWarp" prop="secret">
                     <el-input v-model="dataForm.secret" class="input" type="text"/>
                 </el-form-item>
                 <el-form-item label="对方钱包地址" class="inputWarp" prop="destination">
@@ -80,7 +80,7 @@ export default {
                     {validator: validateAddress ,trigger: 'blur'}
                 ],
                 secret:[
-                    {required: true, message: '请输入钱包密钥', trigger: 'blur' }
+                    {required: true, message: '请输入钱包秘钥', trigger: 'blur' }
                 ],
                 destination:[
                     {required: true, message: '请输入钱包地址', trigger: 'blur' },
