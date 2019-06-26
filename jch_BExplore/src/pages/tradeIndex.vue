@@ -16,7 +16,7 @@
              <div  v-else style="margin:114px 0 159px 0;font-size:14px;font-weight:400;color:#BBC7CE;">
                   <div style=" position: relative;"><i class="iconfont icon-wujiaoyijilu" style="font-size:155px;">
                   </i><br/>
-                  <span style="position: relative;left:-9px;">无交易信息</span></div>
+                  <span style="position: relative;left:-9px;">无记录</span></div>
             </div>
           </div>
           <el-table-column  width="30px">
@@ -116,7 +116,7 @@ export default {
       page: 1,
       size: 20
     };
-    this.getAllList(data);
+    //this.getAllList(data);
   },
   methods: {
     async getAllList(data) {

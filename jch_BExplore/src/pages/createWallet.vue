@@ -13,9 +13,8 @@
                     <div class="margin">
                         <span>钱包地址：</span>
                         <el-input class="long"
-                            type="textarea"
-                            :rows="1"
                             disabled
+                            type="text"
                             placeholder="无"
                             v-model="data.address">
                         </el-input>
@@ -23,9 +22,8 @@
                     <div class="margin">
                         <span>钱包私钥：</span>
                         <el-input class="long"
-                            type="textarea"
-                            :rows="1"
                             disabled
+                            type="text"
                             placeholder="无"
                             v-model="data.secret">
                         </el-input>
@@ -136,9 +134,6 @@ export default {
             top: 10px;
             right: 200px;
             height: 200px;
-            span {
-                float: left;
-            }
         }
     }
 }
@@ -146,6 +141,8 @@ export default {
     margin-top: 20px;
     .long {
        width: 500px; 
+       color: #3e3f45;
+       border: 0px;
     }
     
 }
